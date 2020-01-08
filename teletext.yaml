@@ -1,0 +1,52 @@
+---
+
+news_region: lancs
+
+pages:
+  news:
+    main:
+      feed: 'uk_news'
+      headlines: 0x101
+      index: 0x102
+      summary: 0x103
+      first: 0x104
+      last: 0x124
+      latest: 0x150
+      ticker: 0x151
+    regional:
+      feed: 'regional'
+      headlines: 0x160
+      first: 0x161
+      last: 0x169
+    scitech:
+      feed: 'scitech'
+      carousel: 0x154
+  sport:
+    football:
+      feed: 'football'
+      index: 0x302
+      first: 0x303
+      last: 0x315
+    cricket:
+      feed: 'cricket'
+      index: 0x340
+      first: 0x341
+      last: 0x349
+    formula1:
+      feed: 'formula1'
+      index: 0x360
+      first: 0x361
+      last: 0x369
+    rugby_union:
+      feed: 'rugby_union'
+      index: 0x370
+      first: 0x371
+      last: 0x379
+
+football_league_tables:
+  - [0x324,"https://www.bbc.co.uk/sport/football/premier-league/table"]
+  - [0x325,"https://www.bbc.co.uk/sport/football/championship/table"]
+  - [0x326,"https://www.bbc.co.uk/sport/football/league-one/table"]
+  - [0x327,"https://www.bbc.co.uk/sport/football/league-two/table"]
+  - [0x328,"https://www.bbc.co.uk/sport/football/scottish-league-one/table"]
+  - [0x329,"https://www.bbc.co.uk/sport/football/irish-premiership/table"]
