@@ -4,7 +4,10 @@ from cachecontrol import CacheControl
 from cachecontrol.caches.file_cache import FileCache
 import pickle
 
-_cachefile = '/ram/cache/requests'
+import config
+config=config.Config().config
+
+_cachefile = f"{config['cachedir']}/requests"
 
 class _Singleton(type):
     """

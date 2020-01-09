@@ -8,7 +8,7 @@ import textwrap
 import copy
 
 import config
-config=config.Config().config
+_config=config.Config().config
 
 def news_page(number, contents):
     url = contents['link']
@@ -203,9 +203,9 @@ def news_scitech(entries, conf):
     page.save()
 
 def makenews():
-    region = config['bbc_news_regions'][config['bbc_news_region']]
-    news = config['pages']['news']['main']
-    regional = config['pages']['news']['regional']
+    region = _config['bbc_news_regions'][_config['bbc_news_region']]
+    news = _config['pages']['news']['main']
+    regional = _config['pages']['news']['regional']
 
     newsfeed = bbcparse.Feed(rss.bbc_feed(news['feed']), 'newsmain')
     numstories = ttxutils.hexdiff(news['last'], news['first'])
@@ -232,7 +232,7 @@ def makenews():
 
     news_headlines(regionalstories, regional, region['name'])
 
-    scitech = config['pages']['news']['scitech']
+    scitech = _config['pages']['news']['scitech']
     scitechfeed = bbcparse.Feed(rss.bbc_feed(scitech['feed']), "newssci")
     scitechstories = scitechfeed.get_entries()
     news_scitech(scitechstories, scitech)

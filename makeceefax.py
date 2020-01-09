@@ -10,6 +10,8 @@ import fetch
 import os
 import time
 
+import config
+_config=config.Config().config
 
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
@@ -62,7 +64,7 @@ def makefrontpage(headlines):
 
 def main():
 
-    for d in ['/ram/pages', '/ram/cache']:
+    for d in [_config['pagesdir'], _config['cachedir']]:
         os.makedirs(d, mode=0o755, exist_ok=True)
 
     while True:

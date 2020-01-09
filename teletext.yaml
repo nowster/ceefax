@@ -1,5 +1,8 @@
 ---
 
+pagesdir: /ram/pages
+cachedir: /ram/cache
+
 bbc_news_region: lancashire
 
 bbc_news_regions:

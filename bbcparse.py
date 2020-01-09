@@ -4,11 +4,13 @@ import fetch
 import pickle
 import datetime
 
-import pprint
+#import pprint
+#pp = pprint.PrettyPrinter(indent=4)
 
-pp = pprint.PrettyPrinter(indent=4)
+import config
+_config=config.Config().config
 
-cachedir = '/ram/cache'
+_cachedir = _config['cachedir']
 
 class Feed(object):
     def __init__(self, feed, cachename='cache'):
@@ -27,7 +29,7 @@ class Feed(object):
         self.cachename = cachename
         self.fetch = fetch.Fetcher()
         try:
-            with open(f"{cachedir}/{cachename}.cache", 'rb') as f:
+            with open(f"{_cachedir}/{cachename}.cache", 'rb') as f:
                 self.cache = pickle.load(f)
                 for x in self.cache.keys():
                     pubdate = self.cache[x]['published']
@@ -39,7 +41,7 @@ class Feed(object):
         self.entries = list()
 
     def __del__(self):
-        with open(f"{cachedir}/{self.cachename}.cache", 'wb') as f:
+        with open(f"{_cachedir}/{self.cachename}.cache", 'wb') as f:
             pickle.dump(self.cache, f)
 
     def good_url(self, link):

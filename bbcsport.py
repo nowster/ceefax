@@ -10,9 +10,11 @@ import dateutil.parser
 import copy
 
 import config
-config=config.Config().config
+_config=config.Config().config
 
-league_tables = config['football_league_tables']
+league_tables = _config['football_league_tables']
+
+
 def leagues():
     for num, url in league_tables:
         league(num, url)
@@ -172,7 +174,7 @@ def sport_footer(page, section):
             "€D€]€CBBC WEBSITE: bbc.co.uk/football",
             "€ANext page  €BFootball €CHeadlines €FSport",
         ]
-        pages = config['pages']['sport']['football']
+        pages = _config['pages']['sport']['football']
         index = pages['index']
     elif section in [ 'Formula 1', 'formula1' ]:
         footer = [
@@ -180,7 +182,7 @@ def sport_footer(page, section):
             "€D€]€CBBC WEBSITE: bbc.co.uk/motorsport    ",
             "€ANext page  €BM/sport  €CHeadlines €FSport ",
         ]
-        pages = config['pages']['sport']['formula1']
+        pages = _config['pages']['sport']['formula1']
         index = pages['index']
     elif section in [ 'Cricket' ]:
         footer= [
@@ -188,7 +190,7 @@ def sport_footer(page, section):
             "€D€]€CBBC WEBSITE: bbc.co.uk/cricket    ",
             "€ANext page  €BCricket €CHeadlines €FSport ",
         ]
-        pages = config['pages']['sport']['cricket']
+        pages = _config['pages']['sport']['cricket']
         index = pages['index']
     else:
         footer = [
@@ -196,7 +198,7 @@ def sport_footer(page, section):
             "€D€]€CBBC WEBSITE: bbc.co.uk/sport",
             "€ANext page  €BFootball €CHeadlines €FSport",
         ]
-        pages = config['pages']['sport']['football']
+        pages = _config['pages']['sport']['football']
         index = pages['index']
 
     line = 22
@@ -226,7 +228,7 @@ def sport_page(number, contents):
     page.save()
 
 def football():
-    pages = config['pages']['sport']['football']
+    pages = _config['pages']['sport']['football']
     footballfeed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'football')
     entries = footballfeed.get_entries(sport=True,
                                        max = ttxutils.hexdiff(
@@ -295,7 +297,7 @@ def sport_index(sport, pages, header, footer, entries, increment=1):
 
 
 def football_index(entries):
-    pages = config['pages']['sport']['football']
+    pages = _config['pages']['sport']['football']
     header = [
         "€Wj#3kj#3kj#3k€T€]€R h<h<|h<|(|$|l4|l4| |",
         "€Wj $kj $kj 'k€T€]€R j7ju¬ju¬ ¬ ¬{4¬k5¬0¬0",
@@ -309,7 +311,7 @@ def football_index(entries):
     sport_index("Football", pages, header, footer, entries)
 
 def formula1():
-    pages = config['pages']['sport']['formula1']
+    pages = _config['pages']['sport']['formula1']
     f1feed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'formula1')
     entries = f1feed.get_entries(sport=True,
                                  max = ttxutils.hexdiff(
@@ -333,7 +335,7 @@ def formula1():
     return [f1entries[0], pages['first']]
 
 def f1_index(entries):
-    pages = config['pages']['sport']['formula1']
+    pages = _config['pages']['sport']['formula1']
     header = [
         "€Wj#3kj#3kj#3k€T€]€Rh,hlhl <<4444hl hlhlh$  ",
         "€Wj $kj $kj 'k€T€]€Rj#jzj#5555u5ujk jzjjj1  ",
@@ -348,7 +350,7 @@ def f1_index(entries):
 
 
 def cricket():
-    pages = config['pages']['sport']['cricket']
+    pages = _config['pages']['sport']['cricket']
     feed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'cricket')
     raw_entries = feed.get_entries(sport=True,
                                    max = ttxutils.hexdiff(
@@ -372,7 +374,7 @@ def cricket():
     return [entries[0], pages['first']]
 
 def cricket_index(entries):
-    pages = config['pages']['sport']['cricket']
+    pages = _config['pages']['sport']['cricket']
     header = [
         '€Wj#3kj#3kj#3k€T€]€R  |,h<|h4|,h4|h<(|$',
         "€Wj $kj $kj 'k€T€]€R  ¬pj7}j5¬pj7}jw ¬",
