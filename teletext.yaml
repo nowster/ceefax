@@ -1,6 +1,12 @@
 ---
 
+# Where to store the generated pages
 pagesdir: /ram/pages
+
+# Prefix to name the page files, eg. page gives "page100.tti"
+pageprefix: "page"
+
+# Where to cache fetched data
 cachedir: /ram/cache
 
 bbc_news_region: lancashire

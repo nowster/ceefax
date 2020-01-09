@@ -3,7 +3,11 @@
 import textwrap
 import html
 
-pagedir = '/ram/pages'
+import config
+_config=config.Config().config
+
+_pagedir = _config['pagesdir']
+_pageprefix = _config['pageprefix']
 
 class TeletextPage(object):
     def __init__(self, description="News Page",
@@ -76,7 +80,7 @@ class TeletextPage(object):
         text = html.unescape(text)
         return text.translate(trans)
 
-    def save(self, format_string="{}/page{}.tti"):
-        with open(format_string.format(pagedir,self.page),
+    def save(self, format_string="{}/{}{}.tti"):
+        with open(format_string.format(_pagedir,_pageprefix,self.page),
                   mode="w", newline="\r\n") as f:
             f.write("\n".join(self.lines))
