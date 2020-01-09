@@ -29,11 +29,5 @@ class Fetcher(metaclass=_Singleton):
         self._cached_sess = CacheControl(requests.Session(),
                                          cache=FileCache(_cachefile))
 
-    def save(self):
-        return
-
-    def head(self, uri):
-        return self._cached_sess.head(uri)
-
-    def get(self, uri):
-        return self._cached_sess.get(uri)
+        self.head = self._cached_sess.head
+        self.get = self._cached_sess.get
