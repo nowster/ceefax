@@ -2,6 +2,7 @@ import AdvancedHTMLParser
 import feedparser
 import fetch
 import pickle
+import time
 import datetime
 
 #import pprint
@@ -12,12 +13,21 @@ _config=config.Config().config
 
 _cachedir = _config['cachedir']
 
+def _mkdatetime(t):
+    return datetime.datetime.fromtimestamp(time.mktime(t))
+
 class Feed(object):
     def __init__(self, feed, cachename='cache'):
         if type(feed) is list:
             self.rss_entries = list()
             for f in feed:
                 self.rss_entries.extend(feedparser.parse(f)['entries'])
+            # Sort, newest first
+            self.rss_entries = sorted(self.rss_entries,
+                                      key=lambda e:
+                                      _mkdatetime(e['published_parsed']),
+                                      reverse=True)
+
         else:
             self.rss_entries = feedparser.parse(feed)['entries']
 
@@ -64,12 +74,17 @@ class Feed(object):
         if self.entries:
             return self.entries
 
+        duplicates=dict()
+
         entries = []
         for e in self.rss_entries:
             # pp.pprint(e)
             link = e['link']
-            #print(link, flush=True)
-            update = e['published_parsed']
+            if link in duplicates:
+                continue
+            duplicates[link]=True
+
+            update = _mkdatetime(e['published_parsed'])
             # Filter out stuff that doesn't work as teletext
             if not self.good_url(link):
                 continue
