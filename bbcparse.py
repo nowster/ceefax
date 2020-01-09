@@ -143,6 +143,7 @@ class Feed(object):
         section = self.get_meta(metas, 'article:section')
 
         if 'In pictures:' in stitle:
+            self.cache[url] = None
             return None
 
         storytag = self.parser.getElementById('story-body')
