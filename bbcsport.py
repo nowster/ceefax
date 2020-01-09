@@ -2,12 +2,14 @@ import ttxpage
 import ttxutils
 import ttxcolour
 import bbcparse
-import textwrap
-import AdvancedHTMLParser
 import fetch
 import rss
+
+import textwrap
+import AdvancedHTMLParser
 import dateutil.parser
 import copy
+import pickle
 
 import config
 _config=config.Config().config
@@ -16,15 +18,25 @@ league_tables = _config['football_league_tables']
 
 
 def leagues():
-    for num, url in league_tables:
-        league(num, url)
+    try:
+        with open(f"{_config['cachedir']}/league.cache", 'rb') as f:
+            cache = pickle.load(f)
+    except:
+        cache = dict()
 
-def league(pagenum, url):
+    for num, url in league_tables:
+        league(num, url, cache)
+
+        with open(f"{_config['cachedir']}/league.cache", 'wb') as f:
+            pickle.dump(cache, f)
+
+
+def league(pagenum, url, cache):
     nextpage = ttxutils.nextpage(pagenum)
     page = ttxpage.TeletextPage("Football League Table",
                                 pagenum)
 
-    league, date, table = league_table(url)
+    league, date, table = league_table(url, cache)
 
     league = league.upper().replace(" TABLE", "")
     datefmt = date.strftime("%b %d %H:%M")
@@ -83,7 +95,6 @@ def league(pagenum, url):
                 line += 1
                 page.addfasttext(nextpage, 0x302, 0x301, 0x300, 0x8ff, 0x320)
 
-
     if not newpage:
         line = 24
         for l in footers:
@@ -93,14 +104,26 @@ def league(pagenum, url):
     page.save()
 
 
-def league_table(url):
+def league_table(url, cache):
+    if url in cache:
+        entry = cache[url]
+        headers = { 'If-None-Match': f"{entry['etag']}" }
+    else:
+        entry = None
+        headers = None
+
     f = fetch.Fetcher()
-    r = f.get(url)
-    if r.status_code != 200:
+    resp = f.get(url, headers=headers)
+    if resp.status_code == 304:
+        return entry['value']
+    if resp.status_code != 200:
         print(r.status_code)
         return None
-    parser = AdvancedHTMLParser.AdvancedHTMLParser()
-    parser.parseStr(r.text)
+    if entry and resp.headers.get('etag') == entry['etag']:
+        return entry['value']
+
+    parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
+    parser.parseStr(resp.text)
     tables = parser.getElementsByTagName('table')
     rows = tables[0].getAllChildNodes().getElementsByTagName('tr')
     table = []
@@ -115,9 +138,15 @@ def league_table(url):
     time = dateutil.parser.isoparse(time[0].attributes['datetime'])
     league = parser.getElementsByTagName('h1')
     league = league[0].textContent
-    return (league, time, table)
 
 
+    value = (league, time, table)
+    cache[url] = dict(
+        value=value,
+        etag=resp.headers.get('etag')
+    )
+
+    return value
 
 
 def is_football(section):
