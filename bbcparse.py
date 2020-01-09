@@ -11,8 +11,14 @@ pp = pprint.PrettyPrinter(indent=4)
 cachedir = '/ram/cache'
 
 class Feed(object):
-    def __init__(self, base_url, cachename='cache'):
-        self.rss = feedparser.parse(base_url)
+    def __init__(self, feed, cachename='cache'):
+        if type(feed) is list:
+            self.rss_entries = list()
+            for f in feed:
+                self.rss_entries.extend(feedparser.parse(f)['entries'])
+        else:
+            self.rss_entries = feedparser.parse(feed)['entries']
+
         self.parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser(
             indexNames=False
         )
@@ -57,7 +63,7 @@ class Feed(object):
             return self.entries
 
         entries = []
-        for e in self.rss['entries']:
+        for e in self.rss_entries:
             # pp.pprint(e)
             link = e['link']
             #print(link, flush=True)
