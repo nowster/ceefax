@@ -9,10 +9,10 @@ pageprefix: "page"
 # Where to cache fetched data
 cachedir: /ram/cache
 
-bbc_news_region: lancashire
+bbc_news_region: north_west_england
 
 bbc_news_regions:
-  nireland:
+  northern_ireland:
     name: Northern Ireland
     short: N IRELAND
     feed: news/northern_ireland
@@ -28,50 +28,58 @@ bbc_news_regions:
     name: England
     short: ENGLAND
     feed: news/england
-  nwwales:
+  north_west_wales:
     name: North West Wales
     short: NW WALES
     feed: news/wales/north_west_wales
-  newales:
+  north_east_wales:
     name: North East Wales
     short: NE WALES
     feed: news/wales/north_east_wales
-  midwales:
+  mid_wales:
     name: Mid Wales
     short: MID WALES
     feed: news/wales/mid_wales
-  swwales:
+  south_west_wales:
     name: South West Wales
     short: SW WALES
     feed: news/wales/south_west_wales
-  sewales:
+  south_east_wales:
     name: South East Wales
     short: SE WALES
     feed: news/wales/south_east_wales
-  escotland:
+  east_scotland:
     name: "Edinburgh, Fife & East"
     short: E SCOT
     feed: news/scotland/edinburgh_east_and_fife
-  wscotland:
+  west_scotland:
     name: "Glasgow & West"
     short: W SCOT
     feed: news/scotland/glasgow_and_west
-  hiscotland:
+  highlands_scotland:
     name: "Highlands & Islands"
     short: "H&I SCOT"
     feed: news/scotland/highlands_and_islands
-  nescotland:
+  north_east_scotland:
     name: "NE, Orkney & Shetland"
     short: NE SCOT
     feed: news/scotland/north_east_orkney_and_shetland
-  cscotland:
+  central_scotland:
     name: "Tayside & Central"
     short: C SCOT
     feed: news/scotland/tayside_and_central
-  sscotland:
+  south_scotland:
     name: "South Scotland"
     short: S SCOT
     feed: news/scotland/south_scotland
+  north_west_england:
+    name: "North West England"
+    short: NW ENGL
+    feed:
+      - news/england/cumbria
+      - news/england/lancashire
+      - news/england/merseyside
+      - news/england/manchester
   cumbria:
     name: Cumbria
     short: CUMBRIA
@@ -88,19 +96,34 @@ bbc_news_regions:
     name: Manchester
     short: MANCHESTR
     feed: news/england/manchester
+  north_east_england:
+    name: North East England
+    short: NE ENGL
+    feed:
+      - news/england/tees
+      - news/england/tyne_and_wear
   tees:
     name: Tees
     short: TEES
     feed: news/england/tees
-  tynewear:
+  tyne_wear:
     name: "Tyne & Wear"
     short: "TYNE&WEAR"
     feed: news/england/tyne_and_wear
+  yorks_and_lincs:
+    name: "Yorks & Lincs"
+    short: "YKS&LNCS"
+    feed:
+      - news/england/humberside
+      - news/england/leeds_and_west_yorkshire
+      - news/england/lincolnshire
+      - news/england/south_yorkshire
+      - news/england/york_and_north_yorkshire
   humberside:
     name: "Humberside"
     short: HUMBER
     feed: news/england/humberside
-  westyorks:
+  west_yorks:
     name: "Leeds & West Yorkshire"
     short: W YORKS
     feed: news/england/leeds_and_west_yorkshire
@@ -108,14 +131,23 @@ bbc_news_regions:
     name: Lincolnshire
     short: LINCS
     feed: news/england/lincolnshire
-  southyorks:
+  south_yorks:
     name: "Sheffield & South Yorkshire"
     short: S YORKS
     feed: news/england/south_yorkshire
-  northyorks:
+  north_yorks:
     name: "York & North Yorkshire"
     short: N YORKS
     feed: news/england/york_and_north_yorkshire
+  west_midlands:
+    name: "West Midlands"
+    short: W MIDS
+    feed:
+      - news/england/birmingham_and_black_country
+      - news/england/coventry_and_warwickshire
+      - news/england/hereford_and_worcester
+      - news/england/shropshire
+      - news/england/stoke_and_staffordshire
   birmingham:
     name: "Birmingham & Black Country"
     short: "BIRM'HAM"
@@ -136,6 +168,14 @@ bbc_news_regions:
     name: "Stoke & Staffordshire"
     short: STAFFS
     feed: news/england/stoke_and_staffordshire
+  east_midlands:
+    name: East Midlands
+    short: E MIDS
+    feed:
+      - news/england/derbyshire
+      - news/england/leicester
+      - news/england/northamptonshire
+      - news/england/nottingham
   derbyshire:
     name: Derbyshire
     short: DERBYS
@@ -152,6 +192,16 @@ bbc_news_regions:
     name: Nottingham
     short: NOTTS
     feed: news/england/nottingham
+  west_england:
+    name: "West & South West"
+    short: "W&SW ENG"
+    feed:
+      - news/england/bristol
+      - news/england/cornwall
+      - news/england/devon
+      - news/england/gloucestershire
+      - news/england/somerset
+      - news/england/wiltshire
   bristol:
     name: Bristol
     short: BRISTOL
@@ -176,6 +226,15 @@ bbc_news_regions:
     name: Wiltshire
     short: WILTS
     feed: news/england/wiltshire
+  east_england:
+    name: East England
+    short: EAST
+    feed:
+      - news/england/beds_bucks_and_herts
+      - news/england/cambridgeshire
+      - news/england/essex
+      - news/england/norfolk
+      - news/england/suffolk
   beds_herts_bucks:
     name: "Beds, Herts & Bucks"
     short: "H COUNTY"
@@ -196,6 +255,13 @@ bbc_news_regions:
     name: Suffolk
     short: SUFFOLK
     feed: news/england/suffolk
+  south_england:
+    name: South England
+    short: SOUTH
+    feed:
+      - news/england/berkshire
+      - news/england/hampshire
+      - news/england/oxford
   berkshire:
     name: Berkshire
     short: BERKS
@@ -212,6 +278,14 @@ bbc_news_regions:
     name: Oxford
     short: OXFORD
     feed: news/england/oxford
+  south_east_england:
+    name: "London & South East"
+    short: SE ENG
+    feed:
+      - news/england/kent
+      - news/england/london
+      - news/england/surrey
+      - news/england/sussex
   kent:
     name: Kent
     short: KENT
@@ -232,6 +306,12 @@ bbc_news_regions:
     name: Isle of Man
     short: I O M
     feed: news/world/europe/isle_of_man
+  channel_islands:
+    name: Channel Islands
+    short: CHAN IS
+    feed:
+      - news/world/europe/guernsey
+      - news/world/europe/jersey
   guernsey:
     name: Guernsey
     short: GUERNSEY
@@ -244,7 +324,9 @@ bbc_news_regions:
 pages:
   news:
     main:
-      feed: [ 'news/uk', 'news/world' ]
+      feed:
+        - 'news/uk'
+        - 'news/world'
       headlines: 0x101
       index: 0x102
       summary: 0x103
