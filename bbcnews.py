@@ -57,7 +57,7 @@ def news_headlines(entries, conf, region=None):
             textattr = ttxcolour.colour(ttxcolour.DOUBLE_HEIGHT)
         else:
             textattr = ttxcolour.colour(ttxcolour.ALPHAWHITE)
-        headline = page.truncate(page.fixup(contents['short_title']), 70, ' ')
+        headline = page.truncate(contents['short_title'], 70, ' ')
         headlines = textwrap.wrap(headline, 35)
         page.addline(line, '{}{:<35}{}{:03x}'.format(textattr,
                                                      headlines[0],
@@ -103,7 +103,7 @@ def news_index(entries, conf):
             textcolour = ttxcolour.cyan()
         else:
             textcolour = ttxcolour.white()
-        headline = page.truncate(page.fixup(contents['short_title']), 35, ' ')
+        headline = page.truncate(contents['short_title'], 35, ' ')
         if index <= 11:
             toptitles.append("{}{:<35}{}{:03x}".format(
                 textcolour, headline,
