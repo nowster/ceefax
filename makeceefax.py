@@ -9,13 +9,10 @@ import fetch
 
 import os
 import time
+import argparse
 
 import config
 _config=config.Config().config
-
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
-
 
 def makefrontpage(headlines):
     page = ttxpage.TeletextPage("Service Front Page", 0x100, time=8)
@@ -63,6 +60,11 @@ def makefrontpage(headlines):
         page.save()
 
 def main():
+    parser = argparse.ArgumentParser(description = "Make CEEFAX like pages")
+    parser.add_argument('-e', '--every', metavar='N', type=int,
+                        help = "Run every N seconds")
+
+    args = parser.parse_args()
 
     for d in [_config['pagesdir'], _config['cachedir']]:
         os.makedirs(d, mode=0o755, exist_ok=True)
@@ -75,9 +77,11 @@ def main():
 
         makefrontpage(headlines)
         end = time.time()
-        print(f"Sleeping (run was {end - start:.2f}s)", flush=True)
-        time.sleep(60)
-
+        if args.every:
+            print(f"Sleeping (run was {end - start:.2f}s)", flush=True)
+            time.sleep(args.every)
+        else:
+            break
 
 if __name__ == "__main__":
     main()
