@@ -58,7 +58,7 @@ class Feed(object):
         return True
 
 
-    def get_entries(self, sport=False):
+    def get_entries(self, sport=False, max=99):
         if self.entries:
             return self.entries
 
@@ -81,6 +81,8 @@ class Feed(object):
             if '/sport/' in contents['link'] and not sport:
                  continue
             entries.append(contents)
+            if len(entries) > max:
+                break
 
         self.entries = entries
         return entries
