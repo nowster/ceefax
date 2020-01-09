@@ -98,7 +98,7 @@ class Feed(object):
             if '/sport/' in contents['link'] and not sport:
                  continue
             entries.append(contents)
-            if len(entries) > max:
+            if len(entries) >= max:
                 break
 
         self.entries = entries
