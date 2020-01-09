@@ -9,3 +9,6 @@ def nextpage(page):
 
 def decode(text):
     return text.replace("€", "\x1B").replace("¬", "\x7F")
+
+def hexdiff(a, b):
+    return ( 1 + int(f"{a:x}") - int(f"{b:x}") )
