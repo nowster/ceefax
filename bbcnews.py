@@ -7,29 +7,8 @@ import rss
 import textwrap
 import copy
 
-regions = dict(
-    ni     = ["Northern Ireland", "N IRELAND" "northern_ireland"],
-    manc   = ["Manchester", "MANCHSTR", "england/manchester"],
-    lancs  = ["Lancashire", "LANCS", "england/lancashire"],
-    nwwal  = ["North West Wales", "NW WALES", "wales/north_west_wales"],
-)
-
-region = "lancs"
-
-headlines_page = 0x101
-index_page     = 0x102
-summary_page   = 0x103
-first_news     = 0x104
-last_news      = 0x124
-
-latest_page    = 0x150
-ticker_page    = 0x151
-
-regional_page  = 0x160
-first_regional = 0x161
-last_regional  = 0x169
-
-sci_tech_page  = 0x154
+import config
+config=config.Config().config
 
 def news_page(number, contents):
     url = contents['link']
@@ -51,22 +30,23 @@ def news_page(number, contents):
     newsheaders.newsfooter(page, category)
     page.save()
 
-def news_headlines(entries, region=None):
+def news_headlines(entries, conf, region=None):
+    pagenum = conf['headlines']
     if region:
         page = ttxpage.TeletextPage(
-            "Regional Headlines {:03x}".format(regional_page),
-            regional_page)
-        page.header(regional_page)
+            f"Regional Headlines {pagenum:03x}",
+            pagenum)
+        page.header(pagenum)
         category = newsheaders.newsheader(page, region)
-        nextpage = first_regional
+        nextpage = conf['first']
         maxlines = 9
     else:
         page = ttxpage.TeletextPage(
-            "News Headlines {:03x}".format(headlines_page),
-            headlines_page)
-        page.header(headlines_page)
+            f"News Headlines {pagenum:03x}",
+            pagenum)
+        page.header(pagenum)
         category = newsheaders.newsheader(page, 'headlines')
-        nextpage = first_news
+        nextpage = conf['first']
         maxlines = 8
 
     line = 4
@@ -108,15 +88,16 @@ def news_headlines(entries, region=None):
     newsheaders.newsheadlinesfooter(page, category)
     page.save()
 
-def news_index(entries):
+def news_index(entries, conf):
+    pagenum = conf['index']
     page = ttxpage.TeletextPage(
-        "News Index {:03x}".format(index_page),
-            index_page, time=15)
+        "News Index {:03x}".format(pagenum),
+            pagenum, time=15)
 
     toptitles = []
     subtitles = []
     index = 0
-    nextpage = first_news
+    nextpage = conf['first']
     for contents in entries:
         if index < 3:
             textcolour = ttxcolour.cyan()
@@ -137,7 +118,7 @@ def news_index(entries):
     maxsubpage = int((len(subtitles)+2) / 3)
     for subpage in range(maxsubpage):
         line = 4
-        page.header(index_page, subpage + 1)
+        page.header(pagenum, subpage + 1)
         category = newsheaders.newsheader(page, 'index')
         for t in toptitles:
             if line == 10:
@@ -160,13 +141,14 @@ def news_index(entries):
 
     page.save()
 
-def news_summary(entries):
-    page = ttxpage.TeletextPage(f"News Summary {summary_page:03x}",
-                                summary_page, time=15)
+def news_summary(entries, conf):
+    summarynum = conf['summary']
+    page = ttxpage.TeletextPage(f"News Summary {summarynum:03x}",
+                                summarynum, time=15)
     offset = 0
-    pagenum = first_news
+    pagenum = conf['first']
     for subpage in range(2):
-        page.header(summary_page, subpage + 1)
+        page.header(summarynum, subpage + 1)
         newsheaders.newsheader(page, 'summary')
         index = f"{subpage + 1}/2 "
         page.addline(4, f"{index:>40}")
@@ -186,14 +168,16 @@ def news_summary(entries):
         newsheaders.newssummaryfooter(page)
     page.save()
 
-def news_scitech(entries):
-    page = ttxpage.TeletextPage(f"Sci-Tech {sci_tech_page:03x}", sci_tech_page,
+def news_scitech(entries, conf):
+    pagenum = conf['carousel']
+    page = ttxpage.TeletextPage(f"Sci-Tech {pagenum:03x}",
+                                pagenum,
                                 time = 15)
 
     subpage = 1
     length = len(entries)
     for contents in entries:
-        page.header(sci_tech_page, subpage)
+        page.header(pagenum, subpage)
         newsheaders.newsheader(page, 'scitechhead')
         line = 4
         line += page.wrapline(line, 21, contents['title'],
@@ -219,39 +203,39 @@ def news_scitech(entries):
     page.save()
 
 def makenews():
-    region_name, region_abbrev, region_rss = regions[region]
-    ukfeed = bbcparse.Feed(rss.bbc_feed('uk_news'), 'newsuk')
-    worldfeed = bbcparse.Feed(rss.bbc_feed('world_news'), 'newsworld')
+    region = config['bbc_news_regions'][config['bbc_news_region']]
+    news = config['pages']['news']['main']
+    regional = config['pages']['news']['regional']
 
-    stories = ukfeed.get_entries() + worldfeed.get_entries()
-    stories = stories[ : 1 + int(f"{last_news:x}") - int(f"{first_news:x}")]
+    newsfeed = bbcparse.Feed(rss.bbc_feed(news['feed']), 'newsmain')
+    numstories = ttxutils.hexdiff(news['last'], news['first'])
+    stories = newsfeed.get_entries(max=numstories)
 
-    regionalfeed = bbcparse.Feed(rss.bbc_feed('regional', region_rss),
+    regionalfeed = bbcparse.Feed(rss.bbc_feed(region['feed']),
                                  "newsregional")
-    regionalstories = regionalfeed.get_entries()
-    regionalstories = regionalstories[ :
-                                       1 +
-                                       int(f"{last_regional:x}") -
-                                       int(f"{first_regional:x}")]
-    page = first_news
+    numstories = ttxutils.hexdiff(regional['last'], regional['first'])
+    regionalstories = regionalfeed.get_entries(max=numstories)
+
+    page = news['first']
     for story in stories:
         news_page(page, story)
         page = ttxutils.nextpage(page)
 
-    page = first_regional
+    page = regional['first']
     for story in regionalstories:
         news_page(page, story)
         page = ttxutils.nextpage(page)
 
-    news_index(stories)
-    news_headlines(stories)
-    news_summary(stories)
+    news_index(stories, news)
+    news_headlines(stories, news)
+    news_summary(stories, news)
 
-    news_headlines(regionalstories, region_name)
+    news_headlines(regionalstories, regional, region['name'])
 
-    scitechfeed = bbcparse.Feed(rss.bbc_feed('scitech'), "newssci")
+    scitech = config['pages']['news']['scitech']
+    scitechfeed = bbcparse.Feed(rss.bbc_feed(scitech['feed']), "newssci")
     scitechstories = scitechfeed.get_entries()
-    news_scitech(scitechstories)
+    news_scitech(scitechstories, scitech)
 
     topstory = copy.deepcopy(stories[0])
     topstory['section'] = 'UK News'
@@ -260,6 +244,6 @@ def makenews():
     topregstory['section'] += ' News'
 
     return [
-        (topstory, first_news),
-        (topregstory, first_regional),
+        (topstory, news['first']),
+        (topregstory, regional['first']),
     ]

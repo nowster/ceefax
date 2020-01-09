@@ -228,7 +228,9 @@ def sport_page(number, contents):
 def football():
     pages = config['pages']['sport']['football']
     footballfeed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'football')
-    entries = footballfeed.get_entries(sport=True)
+    entries = footballfeed.get_entries(sport=True,
+                                       max = ttxutils.hexdiff(
+                                           pages['last'], pages['first']))
 
     pagenum = pages['first']
     footentries = list()
@@ -309,7 +311,9 @@ def football_index(entries):
 def formula1():
     pages = config['pages']['sport']['formula1']
     f1feed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'formula1')
-    entries = f1feed.get_entries(sport=True)
+    entries = f1feed.get_entries(sport=True,
+                                 max = ttxutils.hexdiff(
+                                     pages['last'], pages['first']))
 
     pagenum = pages['first']
     f1entries = list()
@@ -346,7 +350,9 @@ def f1_index(entries):
 def cricket():
     pages = config['pages']['sport']['cricket']
     feed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'cricket')
-    raw_entries = feed.get_entries(sport=True)
+    raw_entries = feed.get_entries(sport=True,
+                                   max = ttxutils.hexdiff(
+                                       pages['last'], pages['first']))
 
     pagenum = pages['first']
     entries = list()

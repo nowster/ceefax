@@ -1,11 +1,241 @@
 ---
 
-news_region: lancs
+bbc_news_region: lancashire
+
+bbc_news_regions:
+  nireland:
+    name: Northern Ireland
+    short: N IRELAND
+    feed: news/northern_ireland
+  scotland:
+    name: Scotland
+    short: SCOTLAND
+    feed: news/scotland
+  wales:
+    name: Wales
+    short: WALES
+    feed: news/wales
+  england:
+    name: England
+    short: ENGLAND
+    feed: news/england
+  nwwales:
+    name: North West Wales
+    short: NW WALES
+    feed: news/wales/north_west_wales
+  newales:
+    name: North East Wales
+    short: NE WALES
+    feed: news/wales/north_east_wales
+  midwales:
+    name: Mid Wales
+    short: MID WALES
+    feed: news/wales/mid_wales
+  swwales:
+    name: South West Wales
+    short: SW WALES
+    feed: news/wales/south_west_wales
+  sewales:
+    name: South East Wales
+    short: SE WALES
+    feed: news/wales/south_east_wales
+  escotland:
+    name: "Edinburgh, Fife & East"
+    short: E SCOT
+    feed: news/scotland/edinburgh_east_and_fife
+  wscotland:
+    name: "Glasgow & West"
+    short: W SCOT
+    feed: news/scotland/glasgow_and_west
+  hiscotland:
+    name: "Highlands & Islands"
+    short: "H&I SCOT"
+    feed: news/scotland/highlands_and_islands
+  nescotland:
+    name: "NE, Orkney & Shetland"
+    short: NE SCOT
+    feed: news/scotland/north_east_orkney_and_shetland
+  cscotland:
+    name: "Tayside & Central"
+    short: C SCOT
+    feed: news/scotland/tayside_and_central
+  sscotland:
+    name: "South Scotland"
+    short: S SCOT
+    feed: news/scotland/south_scotland
+  cumbria:
+    name: Cumbria
+    short: CUMBRIA
+    feed: news/england/cumbria
+  lancashire:
+    name: Lancashire
+    short: LANCS
+    feed: news/england/lancashire
+  liverpool:
+    name: Liverpool
+    short: LIVERPOOL
+    feed: news/england/merseyside
+  manchester:
+    name: Manchester
+    short: MANCHESTR
+    feed: news/england/manchester
+  tees:
+    name: Tees
+    short: TEES
+    feed: news/england/tees
+  tynewear:
+    name: "Tyne & Wear"
+    short: "TYNE&WEAR"
+    feed: news/england/tyne_and_wear
+  humberside:
+    name: "Humberside"
+    short: HUMBER
+    feed: news/england/humberside
+  westyorks:
+    name: "Leeds & West Yorkshire"
+    short: W YORKS
+    feed: news/england/leeds_and_west_yorkshire
+  lincolnshire:
+    name: Lincolnshire
+    short: LINCS
+    feed: news/england/lincolnshire
+  southyorks:
+    name: "Sheffield & South Yorkshire"
+    short: S YORKS
+    feed: news/england/south_yorkshire
+  northyorks:
+    name: "York & North Yorkshire"
+    short: N YORKS
+    feed: news/england/york_and_north_yorkshire
+  birmingham:
+    name: "Birmingham & Black Country"
+    short: "BIRM'HAM"
+    feed: news/england/birmingham_and_black_country
+  coventry:
+    name: "Coventry & Warwickshire"
+    short: WARKS
+    feed: news/england/coventry_and_warwickshire
+  hereford_and_worcs:
+    name: "Hereford & Worcester"
+    short: "HFD&WRCS"
+    feed: news/england/hereford_and_worcester
+  shropshire:
+    name: Shropshire
+    short: SALOP
+    feed: news/england/shropshire
+  staffordshire:
+    name: "Stoke & Staffordshire"
+    short: STAFFS
+    feed: news/england/stoke_and_staffordshire
+  derbyshire:
+    name: Derbyshire
+    short: DERBYS
+    feed: news/england/derbyshire
+  leicester:
+    name: Leicestershire
+    short: LEICS
+    feed: news/england/leicester
+  northants:
+    name: Northamptonshire
+    short: NORTHANTS
+    feed: news/england/northamptonshire
+  nottingham:
+    name: Nottingham
+    short: NOTTS
+    feed: news/england/nottingham
+  bristol:
+    name: Bristol
+    short: BRISTOL
+    feed: news/england/bristol
+  cornwall:
+    name: Cornwall
+    short: CORNWALL
+    feed: news/england/cornwall
+  devon:
+    name: Devon
+    short: DEVON
+    feed: news/england/devon
+  gloucstershire:
+    name: Gloucstershire
+    short: GLOS
+    feed: news/england/gloucestershire
+  somerset:
+    name: Somerset
+    short: SOMERSET
+    feed: news/england/somerset
+  wiltshire:
+    name: Wiltshire
+    short: WILTS
+    feed: news/england/wiltshire
+  beds_herts_bucks:
+    name: "Beds, Herts & Bucks"
+    short: "H COUNTY"
+    feed: news/england/beds_bucks_and_herts
+  cambridgeshire:
+    name: Cambridgeshire
+    short: CAMBS
+    feed: news/england/cambridgeshire
+  essex:
+    name: Essex
+    short: ESSEX
+    feed: news/england/essex
+  norfolk:
+    name: Norfolk
+    short: NORFOLK
+    feed: news/england/norfolk
+  suffolk:
+    name: Suffolk
+    short: SUFFOLK
+    feed: news/england/suffolk
+  berkshire:
+    name: Berkshire
+    short: BERKS
+    feed: news/england/berkshire
+  dorset:
+    name: Dorset
+    short: DORSET
+    feed: news/england/dorset
+  hampshire:
+    name: "Hampshire & Isle of Wight"
+    short: "HAMPS&IOW"
+    feed: news/england/hampshire
+  oxford:
+    name: Oxford
+    short: OXFORD
+    feed: news/england/oxford
+  kent:
+    name: Kent
+    short: KENT
+    feed: news/england/kent
+  london:
+    name: London
+    short: LONDON
+    feed: news/england/london
+  surrey:
+    name: Surrey
+    short: SURREY
+    feed: news/england/surrey
+  sussex:
+    name: Sussex
+    short: SUSSEX
+    feed: news/england/sussex
+  isle_of_man:
+    name: Isle of Man
+    short: I O M
+    feed: news/world/europe/isle_of_man
+  guernsey:
+    name: Guernsey
+    short: GUERNSEY
+    feed: news/world/europe/guernsey
+  jersey:
+    name: Jersey
+    short: JERSEY
+    feed: news/world/europe/jersey
 
 pages:
   news:
     main:
-      feed: 'uk_news'
+      feed: [ 'news/uk', 'news/world' ]
       headlines: 0x101
       index: 0x102
       summary: 0x103
@@ -19,26 +249,26 @@ pages:
       first: 0x161
       last: 0x169
     scitech:
-      feed: 'scitech'
+      feed: 'news/technology'
       carousel: 0x154
   sport:
     football:
-      feed: 'football'
+      feed: 'sport/football'
       index: 0x302
       first: 0x303
       last: 0x315
     cricket:
-      feed: 'cricket'
+      feed: 'sport/cricket'
       index: 0x340
       first: 0x341
       last: 0x349
     formula1:
-      feed: 'formula1'
+      feed: 'sport/formula1'
       index: 0x360
       first: 0x361
       last: 0x369
     rugby_union:
-      feed: 'rugby_union'
+      feed: 'sport/rugby_union'
       index: 0x370
       first: 0x371
       last: 0x379

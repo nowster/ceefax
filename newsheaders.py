@@ -1,7 +1,10 @@
 import ttxutils
-import bbcnews
 from ttxcolour import red,green,yellow,blue
 
+import config
+config=config.Config().config
+
+newsconf = config['pages']['news']
 
 def newsheader(page, title):
     headers=[]
@@ -144,8 +147,8 @@ def newsheader(page, title):
 
 def newsfooter(page, category):
     nextpage = ttxutils.nextpage(page.page)
-    lastpage = ttxutils.nextpage(bbcnews.last_news)
-    lastregpage = ttxutils.nextpage(bbcnews.last_regional)
+    lastpage = ttxutils.nextpage(newsconf['main']['last'])
+    lastregpage = ttxutils.nextpage(newsconf['regional']['last'])
     if nextpage in [lastpage, lastregpage]:
         fastext = (
             red()    + 'In Depth ' +
@@ -174,12 +177,12 @@ def newsfooter(page, category):
     for l in lines:
         page.addline(line, ttxutils.decode(l))
         line += 1
-    if nextpage > bbcnews.regional_page:
-        page.addfasttext(nextpage, bbcnews.regional_page,
-                         bbcnews.headlines_page, 0x100, 0x8ff, 0x199)
+    if nextpage > newsconf['regional']['headlines']:
+        page.addfasttext(nextpage, newsconf['regional']['headlines'],
+                         newsconf['main']['headlines'], 0x100, 0x8ff, 0x199)
     else:
-        page.addfasttext(nextpage, bbcnews.index_page,
-                         bbcnews.headlines_page, 0x100, 0x8ff, 0x199)
+        page.addfasttext(nextpage, newsconf['main']['index'],
+                         newsconf['main']['headlines'], 0x100, 0x8ff, 0x199)
 
 def newsheadlinesfooter(page, category):
     if category:
