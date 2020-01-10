@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import requests
-from cachecontrol import CacheControl
-from cachecontrol.caches.file_cache import FileCache
+from cachecontrol import CacheControl # type: ignore
+from cachecontrol.caches.file_cache import FileCache # type: ignore
 import pickle
 
 import config

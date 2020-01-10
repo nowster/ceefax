@@ -1,5 +1,5 @@
-import AdvancedHTMLParser
-import feedparser
+import AdvancedHTMLParser # type: ignore
+import feedparser # type: ignore
 import fetch
 import pickle
 import time

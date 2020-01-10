@@ -2,18 +2,20 @@ import ttxpage
 import ttxcolour
 from typing import List, Optional, Union
 
-def nextpage(page):
+def nextpage(page : Union[int, str]) -> int:
     if type(page) is str:
-        page = int(page, 16)
+        p = int(str(page), 16)
+    else:
+        p = int(page)
     while True:
-        page += 1
-        if (page & 0x0f) <= 9:
-            return page
+        p += 1
+        if (p & 0x0f) <= 9:
+            return p
 
-def decode(text):
+def decode(text: str) -> str:
     return text.replace("€", "\x1B").replace("¬", "\x7F")
 
-def hexdiff(a, b):
+def hexdiff(a: str, b: str) -> int:
     return ( 1 + int(f"{a:x}") - int(f"{b:x}") )
 
 def index_page(category : str,

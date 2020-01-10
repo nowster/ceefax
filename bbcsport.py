@@ -6,7 +6,7 @@ import fetch
 import rss
 
 import textwrap
-import AdvancedHTMLParser
+import AdvancedHTMLParser # type: ignore
 import dateutil.parser
 import copy
 import math
