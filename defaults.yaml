@@ -1,7 +1,7 @@
 ---
 
 # Defaults. Override in a local file.
-# eg. makeceefax.py -c teletext.yaml -c local.yaml
+# eg. makeceefax.py -c defaults.yaml -c local.yaml
 
 # Where to store the generated pages
 pagesdir: /tmp/pages

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import yaml
 
-_default_config_file = 'teletext.yaml'
+_default_config_file = 'defaults.yaml'
 
 class _Singleton(type):
     """
