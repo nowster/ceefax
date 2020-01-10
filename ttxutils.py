@@ -24,7 +24,9 @@ def index_page(category : str,
                footer : List[str],
                entries : list,
                fasttext : Optional[List[int]] = None,
-               increment=1):
+               increment : int =1,
+               rule: Optional[str] = None,
+               number_colour: str = ttxcolour.white()):
     index = pages['index']
     page = ttxpage.TeletextPage(
         f"{category} Index {index:03x}",
@@ -44,13 +46,18 @@ def index_page(category : str,
                 line += 1
         elif index == 1:
             line += 1
+        if line == rule:
+            page.addline(line,
+                         f"{ttxcolour.magenta()}"
+                         "```````````````````````````````````````")
+            line += 1
         title = contents['short_title']
         l, _, r = title.partition(': ')
         if r:
             title = r
         title = page.truncate(title, 35, ' ')
         page.addline(line,
-                     f"{colour}{title:<35}{ttxcolour.white()}{number:03x}")
+                     f"{colour}{title:<35}{number_colour}{number:03x}")
         colour = ttxcolour.cyan()
         line += increment
         index += 1
