@@ -327,9 +327,7 @@ bbc_news_regions:
 pages:
   news:
     main:
-      feed:
-        - 'news/uk'
-        - 'news/world'
+      feed: 'news'
       headlines: 0x101
       index: 0x102
       summary: 0x103
