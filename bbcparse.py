@@ -4,12 +4,27 @@ import fetch
 import pickle
 import time
 import datetime
+import itertools
 
 #import pprint
 #pp = pprint.PrettyPrinter(indent=4)
 
 import config
 _config=config.Config().config
+
+def _interleave(iterables):
+    zip = [ x for x in itertools.zip_longest(*iterables)]
+    zip = [ x for x in itertools.chain(*zip)]
+    seen = {}
+    ret = []
+    for z in zip:
+        # Deduplicate and remove null entries
+        if z is not None:
+            l = z['link']
+            if l not in seen:
+                seen[l] = True
+                ret.append(z)
+    return ret
 
 
 def _mkdatetime(t):
@@ -20,13 +35,9 @@ class Feed(object):
         if type(feed) is list:
             self.rss_entries = list()
             for f in feed:
-                self.rss_entries.extend(feedparser.parse(f)['entries'])
-            # Sort, newest first
-            self.rss_entries = sorted(self.rss_entries,
-                                      key=lambda e:
-                                      _mkdatetime(e['published_parsed']),
-                                      reverse=True)
-
+                self.rss_entries.append(feedparser.parse(f)['entries'])
+            # Interleave the feeds
+            self.rss_entries = _interleave(self.rss_entries)
         else:
             self.rss_entries = feedparser.parse(feed)['entries']
 
