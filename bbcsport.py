@@ -9,6 +9,7 @@ import textwrap
 import AdvancedHTMLParser
 import dateutil.parser
 import copy
+import math
 import pickle
 
 import config
@@ -45,15 +46,30 @@ def league(pagenum, url, cache):
         "€ANext page  €BFootball €CHeadlines €FSport"
     ]
 
+    count = 0
+    for r in table:
+        count += 1
+        if r[8]:
+            count += 1
+
+    pages = math.ceil(count / 14)
+
     newpage = True
     white = True
     row = 1
+    pagecount = 0
     for r in table:
         if newpage:
+            pagecount += 1
             page.header(pagenum, subpage)
             sport_header(page, 'Football')
-            page.addline(4, f" {ttxcolour.green()}{league}")
-            page.addline(6, f" {ttxcolour.white()}{datefmt}    P  W  D  L   F   A Pts")
+            if pages > 1:
+                index = f"{ttxcolour.white()}{pagecount}/{pages}"
+            else:
+                index = ''
+
+            page.addline(4, f"{ttxcolour.green()}{league:<33} {index}")
+            page.addline(6, f"{ttxcolour.white()}{datefmt}     P  W  D  L   F   A Pts")
             line = 8
             newpage = False
 
@@ -71,12 +87,12 @@ def league(pagenum, url, cache):
         w = f"{r[2]:>2}"
         d = f"{r[3]:>2}"
         l = f"{r[4]:>2}"
-        f = f"{r[5]:>2}"
-        a = f"{r[6]:>2}"
+        f = f"{r[5]:>3}"
+        a = f"{r[6]:>3}"
         pts = f"{r[7]:>3}"
         brk = r[8]
 
-        page.addline(line, f"{row:>4} {team:<12} {p} {w} {d} {l}  {f}  {a} {pts}")
+        page.addline(line, f"{row:>3} {team:<12} {p} {w} {d} {l} {f} {a} {pts}")
         row += 1
         line += 1
         if brk and line < 21:
