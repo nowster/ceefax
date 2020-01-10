@@ -1,13 +1,16 @@
 ---
 
-# Where to store the generated pages
-pagesdir: /ram/pages
+# Defaults. Override in a local file.
+# eg. makeceefax.py -c teletext.yaml -c local.yaml
 
-# Prefix to name the page files, eg. page gives "page100.tti"
-pageprefix: "page"
+# Where to store the generated pages
+pagesdir: /tmp/pages
+
+# Prefix to name the page files, eg. "auto" gives "auto100.tti"
+pageprefix: "auto"
 
 # Where to cache fetched data
-cachedir: /ram/cache
+cachedir: /tmp/cache
 
 bbc_news_region: north_west_england
 
