@@ -313,47 +313,6 @@ def football():
     return [footentries[0], pages['first']]
 
 
-def sport_index(sport, pages, header, footer, entries, increment=1):
-    index = pages['index']
-    page = ttxpage.TeletextPage(
-        f"{sport} Index {index:03x}",
-        index)
-    page.header(index)
-    line = 1
-    for l in header:
-        page.addline(line, ttxutils.decode(l))
-        line += 1
-
-    colour = ttxcolour.colour(ttxcolour.DOUBLE_HEIGHT)
-    number = pages['first']
-    index = 0
-    for contents in entries:
-        if increment == 1:
-            if index in [ 1, 6, 10 ]:
-                line += 1
-        elif index == 1:
-            line += 1
-        title = contents['short_title']
-        l, _, r = title.partition(': ')
-        if r:
-            title = r
-        title = page.truncate(title, 35, ' ')
-        page.addline(line,
-                     f"{colour}{title:<35}{ttxcolour.white()}{number:03x}")
-        colour = ttxcolour.cyan()
-        line += increment
-        index += 1
-        number = ttxutils.nextpage(number)
-        if number > pages['last']:
-            break
-    line = 22
-    for l in footer:
-        page.addline(line, ttxutils.decode(l))
-        line += 1
-    page.addfasttext(pages['first'], 0x300, 0x301, 0x300, 0x8ff, 0x199)
-    page.save()
-
-
 def football_index(entries):
     pages = _config['pages']['sport']['football']
     header = [
@@ -366,7 +325,8 @@ def football_index(entries):
         "€D€]€CBBC WEBSITE: bbc.co.uk/football",
         "€ATop story  €BRegional €CHeadlines €FSport",
     ]
-    sport_index("Football", pages, header, footer, entries)
+    ttxutils.index_page("Football", pages, header, footer, entries,
+                        fasttext=[0x300, 0x301, 0x300])
 
 def formula1():
     pages = _config['pages']['sport']['formula1']
@@ -404,7 +364,9 @@ def f1_index(entries):
         "€D€]€CBBC WEBSITE: bbc.co.uk/motorsport    ",
         "€ANext page  €BM/sport  €CHeadlines €FSport ",
     ]
-    sport_index("Football", pages, header, footer, entries, increment=2)
+    ttxutils.index_page("Formula 1", pages, header, footer, entries,
+                        fasttext=[pages['first'], 0x300, 0x301, 0x300],
+                        increment=2)
 
 
 def cricket():
@@ -443,7 +405,8 @@ def cricket_index(entries):
         "€D€]€CBBC WEBSITE: bbc.co.uk/cricket    ",
         "€ANext page  €BCricket €CHeadlines €FSport ",
     ]
-    sport_index("Cricket", pages, header, footer, entries, increment=2)
+    ttxutils.index_page("Cricket", pages, header, footer, entries,
+                        fasttext=[0x300, 0x301, 0x300], increment=2)
 
 
 def rugby_union():
@@ -482,7 +445,8 @@ def rugby_union_index(entries):
         "€D€]€CBBC WEBSITE: bbc.co.uk/rugby    ",
         "€ANext page  €BRugby U €CHeadlines €FSport ",
     ]
-    sport_index("Rugby", pages, header, footer, entries, increment=2)
+    ttxutils.index_page("Rugby", pages, header, footer, entries,
+                        fasttext=[0x300, 0x301, 0x300], increment=2)
 
 
 def makesport():
