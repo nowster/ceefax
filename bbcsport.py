@@ -14,10 +14,9 @@ import pickle
 import config
 _config=config.Config().config
 
-league_tables = _config['football_league_tables']
-
 
 def leagues():
+    league_tables = _config['football_league_tables']
     try:
         with open(f"{_config['cachedir']}/league.cache", 'rb') as f:
             cache = pickle.load(f)

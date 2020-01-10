@@ -19,21 +19,31 @@ class _Singleton(type):
         return cls._instance
 
 class Config(metaclass=_Singleton):
-    def __init__(self, config=_default_config_file):
-        self._config_file = config
+    def __init__(self):
+        self._config_files = []
         self._config = {}
-        self.reload()
 
-    def reload(self):
+    def add(self, config=_default_config_file):
+        self._config_files.append(config)
+
+    def load(self):
         print("Load config")
-        try:
-            with open(self._config_file, 'r') as f:
-                c = yaml.safe_load(f)
-                self._config = c
-        except yaml.YAMLError as exc:
-            print("Error in configuration file:", exc, flush=True)
-            if not self._config:
-                raise
+        new = dict()
+        for f in self._config_files:
+            try:
+                with open(f, 'r') as f:
+                    c = yaml.safe_load(f)
+                    if c:
+                        new.update(c)
+            except yaml.YAMLError as exc:
+                print("Error in configuration file:", exc, flush=True)
+                if not self._config:
+                    raise
+
+        # Assignment will invalidate copies of the singleton.
+        # Avoid it.
+        self._config.clear()
+        self._config.update(new)
 
     @property
     def config(self):

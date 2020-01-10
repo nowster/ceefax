@@ -11,7 +11,6 @@ import datetime
 import config
 _config=config.Config().config
 
-_cachedir = _config['cachedir']
 
 def _mkdatetime(t):
     return datetime.datetime.fromtimestamp(time.mktime(t))
@@ -38,6 +37,7 @@ class Feed(object):
         self.cache = dict()
         self.cachename = cachename
         self.fetch = fetch.Fetcher()
+        _cachedir = _config['cachedir']
         try:
             with open(f"{_cachedir}/{cachename}.cache", 'rb') as f:
                 self.cache = pickle.load(f)
@@ -51,6 +51,7 @@ class Feed(object):
         self.entries = list()
 
     def __del__(self):
+        _cachedir = _config['cachedir']
         with open(f"{_cachedir}/{self.cachename}.cache", 'wb') as f:
             pickle.dump(self.cache, f)
 

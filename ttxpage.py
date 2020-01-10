@@ -6,9 +6,6 @@ import html
 import config
 _config=config.Config().config
 
-_pagedir = _config['pagesdir']
-_pageprefix = _config['pageprefix']
-
 class TeletextPage(object):
     def __init__(self, description="News Page",
                  pagenum=0x800,
@@ -81,6 +78,9 @@ class TeletextPage(object):
         return text.translate(trans)
 
     def save(self, format_string="{}/{}{}.tti"):
-        with open(format_string.format(_pagedir,_pageprefix,self.page),
+        pagedir = _config['pagesdir']
+        pageprefix = _config['pageprefix']
+
+        with open(format_string.format(pagedir,pageprefix,self.page),
                   mode="w", newline="\r\n") as f:
             f.write("\n".join(self.lines))

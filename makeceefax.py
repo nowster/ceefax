@@ -63,8 +63,17 @@ def main():
     parser = argparse.ArgumentParser(description = "Make CEEFAX like pages")
     parser.add_argument('-e', '--every', metavar='N', type=int,
                         help = "Run every N seconds")
+    parser.add_argument('-c', '--config', metavar='F', action='append',
+                        help = "Config files")
 
     args = parser.parse_args()
+
+    if args.config:
+        for c in args.config:
+            config.Config().add(c)
+    else:
+        config.Config().add() # default
+    config.Config().load()
 
     for d in [_config['pagesdir'], _config['cachedir']]:
         os.makedirs(d, mode=0o755, exist_ok=True)

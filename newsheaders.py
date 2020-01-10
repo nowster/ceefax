@@ -4,8 +4,6 @@ from ttxcolour import red,green,yellow,blue
 import config
 _config=config.Config().config
 
-_newsconf = _config['pages']['news']
-
 def newsheader(page, title):
     headers=[]
     category = title
@@ -146,9 +144,11 @@ def newsheader(page, title):
         line += 1
 
 def newsfooter(page, category):
+    newsconf = _config['pages']['news']
+
     nextpage = ttxutils.nextpage(page.page)
-    lastpage = ttxutils.nextpage(_newsconf['main']['last'])
-    lastregpage = ttxutils.nextpage(_newsconf['regional']['last'])
+    lastpage = ttxutils.nextpage(newsconf['main']['last'])
+    lastregpage = ttxutils.nextpage(newsconf['regional']['last'])
     if nextpage in [lastpage, lastregpage]:
         fastext = (
             red()    + 'In Depth ' +
@@ -177,12 +177,12 @@ def newsfooter(page, category):
     for l in lines:
         page.addline(line, ttxutils.decode(l))
         line += 1
-    if nextpage > _newsconf['regional']['headlines']:
-        page.addfasttext(nextpage, _newsconf['regional']['headlines'],
-                         _newsconf['main']['headlines'], 0x100, 0x8ff, 0x199)
+    if nextpage > newsconf['regional']['headlines']:
+        page.addfasttext(nextpage, newsconf['regional']['headlines'],
+                         newsconf['main']['headlines'], 0x100, 0x8ff, 0x199)
     else:
-        page.addfasttext(nextpage, _newsconf['main']['index'],
-                         _newsconf['main']['headlines'], 0x100, 0x8ff, 0x199)
+        page.addfasttext(nextpage, newsconf['main']['index'],
+                         newsconf['main']['headlines'], 0x100, 0x8ff, 0x199)
 
 def newsheadlinesfooter(page, category):
     if category:

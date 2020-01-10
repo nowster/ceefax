@@ -7,8 +7,6 @@ import pickle
 import config
 config=config.Config().config
 
-_cachefile = f"{config['cachedir']}/requests"
-
 class _Singleton(type):
     """
     Define an Instance operation that lets clients access its unique
@@ -26,8 +24,9 @@ class _Singleton(type):
 
 class Fetcher(metaclass=_Singleton):
     def __init__(self):
+        cachefile = f"{config['cachedir']}/requests"
         self._cached_sess = CacheControl(requests.Session(),
-                                         cache=FileCache(_cachefile))
+                                         cache=FileCache(cachefile))
 
         self.head = self._cached_sess.head
         self.get = self._cached_sess.get
