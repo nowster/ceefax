@@ -79,3 +79,45 @@ def index_page(category : str,
     else:
         page.addfasttext(pages['first'], 0x100, 0x101, 0x100, 0x8ff, 0x199)
     page.save()
+
+def news_page(category : str,
+              pages : dict,
+              number : int,
+              contents : dict,
+              header : List[str],
+              footer : List[str],
+              fasttext : Optional[List[int]] = None):
+    url = contents['link']
+    page = ttxpage.TeletextPage(
+        f"{category} Page {number:03x} {url}", number)
+    page.header(number)
+    line = 1
+    for l in header:
+        page.addline(line, decode(l))
+        line += 1
+
+    title = contents['title']
+    line += page.wrapline(line, 21,
+                          page.fixup(title),
+                          ttxcolour.green())
+    colour = ' '
+    for para in contents['text']:
+        if line <= 21:
+            line += page.wrapline(line, 22, page.fixup(para), colour) + 1
+            colour = ttxcolour.cyan()
+
+    line = 25 - len(footer)
+    for l in footer:
+        page.addline(line, decode(l))
+        line += 1
+    if fasttext and len(fasttext) in [3, 4, 6]:
+        if len(fasttext) == 3:
+            f = [nextpage(number), *fasttext, 0x8ff, 0x199]
+        if len(fasttext) == 4:
+            f = [*fasttext, 0x8ff, 0x199]
+        else:
+            f = fasttext
+        page.addfasttext(*f)
+    else:
+        page.addfasttext(pages['first'], 0x100, 0x101, 0x100, 0x8ff, 0x199)
+    page.save()
