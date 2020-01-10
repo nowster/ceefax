@@ -180,6 +180,12 @@ def sport_header(page, section):
             "€Wj $kj $kj 'k€T€]€R  ¬pj7}j5¬pj7}jw ¬",
             '€W"###"###"###€T////,,-,,-.,,-.,-,/,///////'
         ]
+    elif section in ['Rugby Union']:
+        header = [
+            '€Wj#3kj#3kj#3k€T€]€R    hl 44<,hl 44',
+            "€Wj $kj $kj 'k€T€]€R    j#5u5u{js5s5",
+            '€W"###"###"###€T//////-/.,.,,-,.,.////////'
+        ]
     else:
         header = [
             "€Wj#3kj#3kj#3k€T€]€R   h<,h<|h<|h<|(|$      ",
@@ -219,6 +225,14 @@ def sport_footer(page, section):
             "€ANext page  €BCricket €CHeadlines €FSport ",
         ]
         pages = _config['pages']['sport']['cricket']
+        index = pages['index']
+    elif section in [ 'Rugby Union' ]:
+        footer= [
+            "€D€]€CCEEFAX RUGBY SECTION PAGE 370   ",
+            "€D€]€CBBC WEBSITE: bbc.co.uk/rugby    ",
+            "€ANext page  €BRugby U €CHeadlines €FSport ",
+        ]
+        pages = _config['pages']['sport']['rugby_union']
         index = pages['index']
     else:
         footer = [
@@ -416,6 +430,45 @@ def cricket_index(entries):
     sport_index("Cricket", pages, header, footer, entries, increment=2)
 
 
+def rugby_union():
+    pages = _config['pages']['sport']['rugby_union']
+    feed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'rugby_union')
+    raw_entries = feed.get_entries(sport=True,
+                                   max = ttxutils.hexdiff(
+                                       pages['last'], pages['first']))
+
+    pagenum = pages['first']
+    entries = list()
+    for contents in raw_entries:
+        if '/rugby-union/' in contents['link']:
+            contents['section'] = 'Rugby Union'
+            entries.append(contents)
+
+    for contents in entries:
+        sport_page(pagenum, contents)
+        pagenum = ttxutils.nextpage(pagenum)
+        if pagenum > pages['last']:
+            break
+
+    rugby_union_index(entries)
+
+    return [entries[0], pages['first']]
+
+def rugby_union_index(entries):
+    pages = _config['pages']['sport']['rugby_union']
+    header = [
+        '€Wj#3kj#3kj#3k€T€]€R    hl 44<,hl 44',
+        "€Wj $kj $kj 'k€T€]€R    j#5u5u{js5s5",
+        '€W"###"###"###€T//////-/.,.,,-,.,.////////'
+    ]
+    footer= [
+        "€D€]€CCEEFAX RUGBY SECTION PAGE 370   ",
+        "€D€]€CBBC WEBSITE: bbc.co.uk/rugby    ",
+        "€ANext page  €BRugby U €CHeadlines €FSport ",
+    ]
+    sport_index("Rugby", pages, header, footer, entries, increment=2)
+
+
 def makesport():
     topfoot = copy.deepcopy(football())
     topfoot[0]['section'] = "Football"
@@ -423,5 +476,6 @@ def makesport():
     return [
         topfoot,
         formula1(),
-        cricket()
+        cricket(),
+        rugby_union()
     ]

@@ -362,7 +362,7 @@ pages:
       first: 0x361
       last: 0x369
     rugby_union:
-      feed: 'sport/rugby_union'
+      feed: 'sport/rugby-union'
       index: 0x370
       first: 0x371
       last: 0x379
