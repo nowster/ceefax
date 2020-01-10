@@ -168,7 +168,10 @@ class Feed(object):
         stitle = self.get_meta(metas, 'og:title')
         section = self.get_meta(metas, 'article:section')
 
-        if 'In pictures:' in stitle:
+        if 'in pictures:' in stitle.lower():
+            self.cache[url] = None
+            return None
+        if 'in pictures:' in title.lower():
             self.cache[url] = None
             return None
 
