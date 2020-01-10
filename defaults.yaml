@@ -364,6 +364,11 @@ pages:
       index: 0x370
       first: 0x371
       last: 0x379
+  entertainment:
+    feed: 'news/entertainment_and_arts'
+    index: 0x501
+    first: 0x502
+    last: 0x514
 
 football_league_tables:
   - [0x324,"https://www.bbc.co.uk/sport/football/premier-league/table"]

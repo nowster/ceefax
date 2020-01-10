@@ -5,6 +5,7 @@ import ttxcolour
 import ttxutils
 import bbcnews
 import bbcsport
+import bbcents
 import fetch
 
 import os
@@ -83,6 +84,7 @@ def main():
         headlines = []
         headlines.extend(bbcnews.makenews())
         headlines.extend(bbcsport.makesport())
+        headlines.extend(bbcents.makeentertainment())
 
         makefrontpage(headlines)
         end = time.time()
