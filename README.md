@@ -13,6 +13,10 @@ format](https://zxnet.co.uk/teletext/documents/ttiformat.pdf).
 
 ## Modules required to use
 
+* dateutil, to parse dates from feeds
+
+      sudo apt install python3-dateutil
+
 * AdvancedHTMLParser, to extract information from HTML pages
 
       pip3 install AdvancedHTMLParser
