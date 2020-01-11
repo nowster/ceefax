@@ -1,5 +1,5 @@
 import ttxutils
-from ttxcolour import red,green,yellow,blue
+from ttxcolour import red,green,yellow,cyan
 
 import config
 _config=config.Config().config
@@ -154,13 +154,13 @@ def newsfooter(page, category):
             red()    + 'In Depth ' +
             green()  + 'News Indx' +
             yellow() + 'Headlines' +
-            blue()   + 'Main Menu' )
+            cyan()   + 'Main Menu' )
     else:
         fastext = (
             red()    + 'Next News' +
             green()  + 'News Indx' +
             yellow() + 'Headlines' +
-            blue()   + 'Main Menu' )
+            cyan()   + 'Main Menu' )
 
     if category:
         lines = [
@@ -192,7 +192,7 @@ def newsheadlinesfooter(page, category):
             red()    + 'Next Page' +
             green()  + 'Top Story' +
             yellow() + 'Reg Sport' +
-            blue()   + 'Main Menu'
+            cyan()   + 'Main Menu'
         ]
     else:
         lines = [
@@ -201,7 +201,7 @@ def newsheadlinesfooter(page, category):
             red()    + 'News Index' +
             green()  + 'Top Story' +
             yellow() + 'TV/Radio' +
-            blue()   + 'Main Menu'
+            cyan()   + 'Main Menu'
         ]
     line = 22
     for l in lines:
