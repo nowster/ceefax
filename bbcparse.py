@@ -153,7 +153,7 @@ class Feed(object):
         if r.status_code != 200:
             print(r.status_code)
             return None
-        self.parser.parseStr(r.text)
+        self.parser.parseStr(r.content)
         metas = self.get_metas()
 
         #link = self.get_property('meta', 'og:url')
