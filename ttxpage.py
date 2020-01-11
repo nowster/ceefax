@@ -28,6 +28,10 @@ class TeletextPage(object):
             'í': 'i', '…': '.', 'É': 'E', 'ë':'e', '“': '"',
             '”': '"', "—": '-', '[': '(', ']': ')', 'ü': 'u',
             "€": "E", '#': '_',
+            "\u00a0" : " ", # non-break space
+            "\u00ad" : "",  # soft hyphen
+            "\u2010" : "-", # hyphen
+            "\u2011" : "-", # non-break hyphen
         }
 
     def header(self, pagenum=0x800, subpage=0, status=0x8000):
