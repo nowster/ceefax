@@ -60,6 +60,17 @@ def makefrontpage(headlines):
         page.addfasttext(0x101, 0x300, 0x600, 0x199, 0x8ff, 0x199)
         page.save()
 
+def nms_extras(headlines):
+    nms = _config['nms']
+    if 'headlines_file' in nms:
+        with open(nms['headlines_file'], 'w') as f:
+            for h in headlines:
+                story, pagenum = h
+                print(story['section'], "\t",
+                      story['short_title'],
+                      f"\t{pagenum:03x}",
+                      file=f)
+
 def main():
     parser = argparse.ArgumentParser(description = "Make CEEFAX like pages")
     parser.add_argument('-e', '--every', metavar='N', type=int,
@@ -87,6 +98,9 @@ def main():
         headlines.extend(bbcents.makeentertainment())
 
         makefrontpage(headlines)
+        if 'nms' in _config:
+            nms_extras(headlines)
+
         end = time.time()
         if args.every:
             print(f"Sleeping (run was {end - start:.2f}s)", flush=True)
