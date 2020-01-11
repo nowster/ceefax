@@ -5,6 +5,7 @@ import pickle
 import time
 import datetime
 import itertools
+import re
 
 #import pprint
 #pp = pprint.PrettyPrinter(indent=4)
@@ -26,6 +27,14 @@ def _interleave(iterables):
                 ret.append(z)
     return ret
 
+def _remove_scripts(t):
+    # BBC sometimes have inline JavaScript scripts that are not
+    # within comments, which greatly confuses the parser if they
+    # have the text <html> inside them.
+    # Football match report pages are the usual culprit.
+    regex = re.compile(r'<script(| type="text/javascript")>.+?<\/script>',
+                       re.DOTALL)
+    return regex.sub('', t)
 
 def _mkdatetime(t):
     return datetime.datetime.fromtimestamp(time.mktime(t))
@@ -144,7 +153,13 @@ class Feed(object):
         if r.status_code != 200:
             print(r.status_code)
             return None
-        self.parser.parseStr(r.content)
+        try:
+            text = _remove_scripts(r.content.decode("utf-8"))
+            self.parser.parseStr(text)
+        except Exception as inst:
+            print(type(inst), inst)
+            # print(text, file=open('/tmp/parsefail.html', 'w'))
+            return None
         metas = self.get_metas()
 
         link = self.get_meta(metas, 'og:url')
