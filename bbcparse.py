@@ -130,15 +130,6 @@ class Feed(object):
             return metas[prop]
         return None
 
-    def get_property(self, name, property):
-        fields = self.parser.getElementsByAttr('property', property)
-        for f in fields:
-            if f.nodeName == name:
-                if 'content' in f.attributes:
-                    return f.attributes['content']
-        return None
-
-
     def extract(self, url, pubdate):
         if url in self.cache:
             entry = self.cache[url]
@@ -156,7 +147,6 @@ class Feed(object):
         self.parser.parseStr(r.content)
         metas = self.get_metas()
 
-        #link = self.get_property('meta', 'og:url')
         link = self.get_meta(metas, 'og:url')
 
         if not self.good_url(link):
@@ -172,9 +162,6 @@ class Feed(object):
         if title is not None:
             title = title[0].textContent
 
-        #description = self.get_property('meta', 'og:description')
-        #stitle = self.get_property('meta', 'og:title')
-        #section = self.get_property('meta', 'article:section')
         description = self.get_meta(metas, 'og:description')
         stitle = self.get_meta(metas, 'og:title')
         section = self.get_meta(metas, 'article:section')
