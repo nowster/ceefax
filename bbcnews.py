@@ -18,7 +18,7 @@ def news_page(number, contents):
     category = newsheaders.newsheader(page, contents['section'])
     line = 4
     line += page.wrapline(line, 21, page.fixup(contents['title']),
-                          ttxcolour.green())
+                          ttxcolour.yellow())
     colour = ' '
     for para in contents['text']:
         if line <= 21:

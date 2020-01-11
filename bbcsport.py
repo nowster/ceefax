@@ -194,7 +194,7 @@ def sport_header(page, section):
         header = [
             '€Wj#3kj#3kj#3k€T€]€R  |,h<|h4|,h4|h<(|$',
             "€Wj $kj $kj 'k€T€]€R  ¬pj7}j5¬pj7}jw ¬",
-            '€W"###"###"###€T////,,-,,-.,,-.,-,/,///////'
+            '€W"###"###"###€T////,,-.,-.,,-.,-,/,///////'
         ]
     elif section in ['Rugby Union']:
         header = [
