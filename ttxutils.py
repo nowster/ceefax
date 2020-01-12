@@ -71,7 +71,7 @@ def index_page(category : str,
     if fasttext and len(fasttext) in [3, 4, 6]:
         if len(fasttext) == 3:
             f = [pages['first'], *fasttext, 0x8ff, 0x199]
-        if len(fasttext) == 4:
+        elif len(fasttext) == 4:
             f = [*fasttext, 0x8ff, 0x199]
         else:
             f = fasttext
