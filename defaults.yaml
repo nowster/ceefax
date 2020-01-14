@@ -381,9 +381,9 @@ football_league_tables:
 football_fixtures_url: 'https://www.bbc.co.uk/sport/football/scores-fixtures'
 
 football_fixtures:
-  - [0x320, 0, 'TODAY']
-  - [0x321, +1, 'TOMORROW']
-  - [0x322, -1, 'YESTERDAY']
+  - [0x330, -1, 'YESTERDAY']
+  - [0x331, 0,  'TODAY']
+  - [0x332, +1, 'TOMORROW']
 
 football_fixture_leagues:
   - THE FA CUP
