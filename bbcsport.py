@@ -132,7 +132,7 @@ def league_table(url, cache):
     if resp.status_code == 304:
         return entry['value']
     if resp.status_code != 200:
-        print(r.status_code)
+        print(resp.status_code)
         return None
     if entry and resp.headers.get('etag') == entry['etag']:
         return entry['value']
