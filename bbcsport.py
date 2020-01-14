@@ -195,13 +195,13 @@ def fixture_page(pagenum, date, dayname, cache):
     p = [header]
     for f in fixes:
         rows = []
-        r = f"{ttxcolour.white()}{f['league'].upper()}"
+        r = f"{ttxcolour.white()}{page.fixup(f['league']).upper()}"
         if f['round_']:
-            r += f"{ttxcolour.magenta()}{f['round_']}"
+            r += f"{ttxcolour.magenta()}{page.fixup(f['round_'])}"
         rows.append(f"{r:<38}")
         for m in f['matches']:
-            home_team = m['home_team'][:13]
-            away_team = m['away_team'][:13]
+            home_team = page.fixup(m['home_team'])[:13]
+            away_team = page.fixup(m['away_team'])[:13]
             r = f"{ttxcolour.cyan()}{home_team:<13}"
             if m['kickoff']:
                 r += f"{ttxcolour.white()}{'v':^5}"
