@@ -5,6 +5,7 @@ import bbcparse
 import fetch
 import rss
 
+import datetime
 import textwrap
 import AdvancedHTMLParser # type: ignore
 import dateutil.parser
@@ -163,6 +164,167 @@ def league_table(url, cache):
 
     return value
 
+def fixtures():
+    try:
+        with open(f"{_config['cachedir']}/fixtures.cache", 'rb') as f:
+            cache = pickle.load(f)
+    except:
+        cache = dict()
+
+    for page, offset, label in _config['football_fixtures']:
+        day = datetime.date.today() + datetime.timedelta(days=offset)
+        fixture_page(page, day, f"{label.upper()}'S FIXTURES", cache)
+
+    with open(f"{_config['cachedir']}/league.cache", 'wb') as f:
+        pickle.dump(cache, f)
+
+
+def fixture_page(pagenum, date, dayname, cache):
+    nextpage = ttxutils.nextpage(pagenum)
+    page = ttxpage.TeletextPage("Football Fixtures",
+                                pagenum)
+
+    maxrows = 18
+    isodate = date.isoformat()
+    url = f"{_config['football_fixtures_url']}/{isodate}"
+    fixes = fixtures_table(url, cache)
+    pages = []
+    header = f"{ttxcolour.green()}{dayname}"
+    p = [header]
+    for f in fixes:
+        rows = []
+        r = f"{ttxcolour.white()}{f['league'].upper()}"
+        if f['round_']:
+            r += f"{ttxcolour.magenta()}{f['round_']}"
+        rows.append(f"{r:<38}")
+        for m in f['matches']:
+            home_team = m['home_team'][:13]
+            away_team = m['away_team'][:13]
+            r = f"{ttxcolour.cyan()}{home_team:<13}"
+            if m['kickoff']:
+                r += f"{ttxcolour.white()}{'v':^5}"
+            else:
+                r += f"{ttxcolour.white()}{m['home_goals']:>2}"
+                r += f"-{m['away_goals']:<2}"
+            r += f"{ttxcolour.cyan()}{away_team:<13}"
+            if m['kickoff']:
+                r += f"{ttxcolour.green()}{page.fixup(m['kickoff']):>5}"
+            elif m['status']:
+                status = page.fixup(m['status'])[:5]
+                r += f"{ttxcolour.yellow()}{status:>5}"
+            rows.append(r)
+        if ((len(p) + len(rows) <  maxrows)
+            or (len(p) == 0 and len(rows) == maxrows)):
+            if len(p)>1:
+                p.append('')
+            p.extend(rows)
+        else:
+            pages.append(p)
+            p = [header]
+            p.extend(rows)
+    if len(fixes) == 0:
+        p.append('')
+        p.append(f'{ttxcolour.cyan()}No matches today.')
+    pages.append(p)
+
+    subpage = 0
+    for p in pages:
+        if len(pages) > 1:
+            subpage += 1
+        page.header(pagenum, subpage)
+        sport_header(page, 'Football')
+        if len(pages) > 1:
+            index = f"{subpage}/{len(pages)}"
+            p[0] = f"{p[0]:<34}{ttxcolour.white()}{index:>5}"
+        line = 4
+        for r in p:
+            if len(r):
+                page.addline(line, r)
+            line += 1
+        sport_footer(page, 'Football')
+
+    page.save()
+
+
+def _get_span(nodes, class_name, tag_name=None, index=0):
+    values = nodes.getElementsByClassName(class_name)
+    if tag_name:
+        #children = values.getAllChildNodes(Nodes)
+        values = values.getElementsByTagName(tag_name)
+    if len(values) > index:
+        return values[index].textContent
+    else:
+        return None
+
+def fixtures_table(url, cache):
+    if url in cache:
+        entry = cache[url]
+        headers = { 'If-None-Match': f"{entry['etag']}" }
+    else:
+        entry = None
+        headers = None
+
+    f = fetch.Fetcher()
+    resp = f.get(url, headers=headers)
+    if resp.status_code == 304:
+        return entry['value']
+    if resp.status_code != 200:
+        print(f"{resp.status_code} on {url}")
+        return None
+    if entry and resp.headers.get('etag') == entry['etag']:
+        return entry['value']
+
+    parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
+    parser.parseStr(resp.text)
+    divs = parser.getElementsByClassName('qa-match-block')
+    table = []
+    for div_row in divs:
+        children = div_row.getAllChildNodes()
+        league = children.getElementsByTagName('h3')
+        league = league[0].textContent.upper()
+        if league not in _config['football_fixture_leagues']:
+            continue
+        round_ = children.getElementsByTagName('h4')
+        if len(round_):
+            round_ = round_[0].textContent
+        else:
+            round_ = None
+        block = []
+        matches = children.getElementsByTagName('ul')
+        matches = matches[0].getAllChildNodes().getElementsByTagName('li')
+        for match in matches:
+            nodes = match.getAllChildNodes()
+            home_team = _get_span(nodes, 'sp-c-fixture__team-name-trunc',
+                                  'abbr',0)
+            away_team = _get_span(nodes, 'sp-c-fixture__team-name-trunc',
+                                  'abbr',1)
+            home_goals = _get_span(nodes, 'sp-c-fixture__number--home')
+            away_goals = _get_span(nodes, 'sp-c-fixture__number--away')
+            status = _get_span(nodes, 'sp-c-fixture__aside')
+            if not status:
+                status = _get_span(nodes, 'sp-c-fixture__status')
+            if status:
+                status = status.replace("Match postponed -","")
+                status = status.replace(" mins", "min")
+                status = status.replace(' ','')
+            kickoff = _get_span(nodes, 'sp-c-fixture__number--time')
+            block.append(dict(
+                home_team=home_team,
+                away_team=away_team,
+                home_goals=home_goals,
+                away_goals=away_goals,
+                status=status,
+                kickoff=kickoff,
+            ))
+
+        table.append(dict(
+            league=league,
+            round_=round_,
+            matches=block,
+        ))
+
+    return table
+
 
 def is_football(section):
     return section in [
@@ -309,6 +471,7 @@ def football():
 
     # league tables go here
     leagues()
+    fixtures()
 
     return [footentries[0], pages['first']]
 

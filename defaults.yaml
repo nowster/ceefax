@@ -377,3 +377,21 @@ football_league_tables:
   - [0x327,"https://www.bbc.co.uk/sport/football/league-two/table"]
   - [0x328,"https://www.bbc.co.uk/sport/football/scottish-league-one/table"]
   - [0x329,"https://www.bbc.co.uk/sport/football/irish-premiership/table"]
+
+football_fixtures_url: 'https://www.bbc.co.uk/sport/football/scores-fixtures'
+
+football_fixtures:
+  - [0x320, 0, 'TODAY']
+  - [0x321, +1, 'TOMORROW']
+  - [0x322, -1, 'YESTERDAY']
+
+football_fixture_leagues:
+  - THE FA CUP
+  - PREMIER LEAGUE
+  - CHAMPIONSHIP
+  - LEAGUE ONE
+  - LEAGUE TWO
+  - EFL TROPHY
+  - SCOTTISH CUP
+  - SCOTTISH CHAMPIONSHIP
+  - SCOTTISH LEAGUE ONE
