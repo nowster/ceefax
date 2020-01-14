@@ -177,7 +177,7 @@ def fixtures():
             label = day.strftime("%A")
         fixture_page(page, day, f"{label.upper()}'S FIXTURES", cache)
 
-    with open(f"{_config['cachedir']}/league.cache", 'wb') as f:
+    with open(f"{_config['cachedir']}/fixtures.cache", 'wb') as f:
         pickle.dump(cache, f)
 
 
