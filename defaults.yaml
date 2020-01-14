@@ -384,6 +384,10 @@ football_fixtures:
   - [0x330, -1, 'YESTERDAY']
   - [0x331, 0,  'TODAY']
   - [0x332, +1, 'TOMORROW']
+  - [0x333, +2, '']
+  - [0x334, +3, '']
+  - [0x335, +4, '']
+  - [0x336, +5, '']
 
 football_fixture_leagues:
   - THE FA CUP

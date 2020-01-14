@@ -173,6 +173,8 @@ def fixtures():
 
     for page, offset, label in _config['football_fixtures']:
         day = datetime.date.today() + datetime.timedelta(days=offset)
+        if not label:
+            label = day.strftime("%A")
         fixture_page(page, day, f"{label.upper()}'S FIXTURES", cache)
 
     with open(f"{_config['cachedir']}/league.cache", 'wb') as f:
