@@ -325,6 +325,11 @@ def fixtures_table(url, cache):
             matches=block,
         ))
 
+    cache[url] = dict(
+        value=table,
+        etag=resp.headers.get('etag')
+    )
+
     return table
 
 
