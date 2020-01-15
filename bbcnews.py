@@ -180,7 +180,7 @@ def news_scitech(entries, conf):
         page.header(pagenum, subpage)
         newsheaders.newsheader(page, 'scitechhead')
         line = 4
-        line += page.wrapline(line, 21, contents['title'],
+        line += page.wrapline(line, 21, page.fixup(contents['title']),
                               ttxcolour.yellow())
         colour = ' '
         for para in contents['text']:
