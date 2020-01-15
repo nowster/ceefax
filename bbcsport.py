@@ -69,8 +69,8 @@ def league(pagenum, url, cache):
             else:
                 index = ''
 
-            page.addline(4, f"{ttxcolour.green()}{league:<33} {index}")
-            page.addline(6, f"{ttxcolour.white()}{datefmt}     P  W  D  L   F   A Pts")
+            page.addline(4, f"{ttxcolour.green()} {league:<32} {index}")
+            page.addline(6, f"{ttxcolour.white()} {datefmt}    P  W  D  L   F   A Pts")
             line = 8
             newpage = False
 
@@ -93,12 +93,12 @@ def league(pagenum, url, cache):
         pts = f"{r[7]:>3}"
         brk = r[8]
 
-        page.addline(line, f"{row:>3} {team:<12} {p} {w} {d} {l} {f} {a} {pts}")
+        page.addline(line, f"{colour}{row:>2} {team:<12} {p} {w} {d} {l} {f} {a} {pts}")
         row += 1
         line += 1
         if brk and line < 21:
             page.addline(line,
-                         "{}---------------------------------------".format(
+                         "{}```````````````````````````````````````".format(
                              ttxcolour.red()))
             line += 1
 
