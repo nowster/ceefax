@@ -137,6 +137,7 @@ def league_table(url, cache):
         return None
     if entry and resp.headers.get('etag') == entry['etag']:
         return entry['value']
+    print(f"Cache miss {url}", flush=True)
 
     parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
     parser.parseStr(resp.text)
@@ -275,6 +276,7 @@ def fixtures_table(url, cache):
         return None
     if entry and resp.headers.get('etag') == entry['etag']:
         return entry['value']
+    print(f"Cache miss {url}", flush=True)
 
     parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
     parser.parseStr(resp.text)
