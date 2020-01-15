@@ -20,7 +20,7 @@ def makefrontpage(headlines):
 
     subpage = 1
     for h in headlines:
-        page.header(0x100, subpage)
+        page.header(0x100, subpage, status=0xc000)
         # pp.pprint(h)
         entry, pagenum = h
         title = entry['short_title'].upper()
