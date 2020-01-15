@@ -123,7 +123,7 @@ def league(pagenum, url, cache):
 def league_table(url, cache):
     if url in cache:
         entry = cache[url]
-        headers = { 'If-None-Match': f"{entry['etag']}" }
+        headers = { 'If-None-Match': entry['etag'] }
     else:
         entry = None
         headers = None
@@ -262,7 +262,7 @@ def _get_span(nodes, class_name, tag_name=None, index=0):
 def fixtures_table(url, cache):
     if url in cache:
         entry = cache[url]
-        headers = { 'If-None-Match': f"{entry['etag']}" }
+        headers = { 'If-None-Match': entry['etag'] }
     else:
         entry = None
         headers = None
