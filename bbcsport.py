@@ -456,6 +456,137 @@ def sport_page(number, contents):
     sport_footer(page, contents['section'])
     page.save()
 
+def football_gossip_entries(url, cache):
+    if url in cache:
+        entry = cache[url]
+        headers = { 'If-None-Match': entry['etag'] }
+    else:
+        entry = None
+        headers = None
+
+    f = fetch.Fetcher()
+    resp = f.get(url, headers=headers)
+    if resp.status_code == 304:
+        return entry['value']
+    if resp.status_code != 200:
+        print(f"{resp.status_code} on {url}")
+        return None
+    if entry and resp.headers.get('etag') == entry['etag']:
+        return entry['value']
+    print(f"Cache miss {url}", flush=True)
+
+    parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
+    parser.parseStr(resp.content.decode("utf-8"))
+
+    paragraphs = []
+    div = parser.getElementById('story-body')
+    children = div.getAllChildNodes().getElementsByTagName('p')
+    for p in children:
+        head = ""
+        line = ""
+        tail = ""
+        first = True
+        for c in p.childBlocks:
+            if type(c) is str:
+                if c:
+                    if first:
+                        head += f" {c}"
+                    else:
+                        line += f" {c}"
+            else:
+                if (c.nodeName == 'b' and first):
+                    head += f" {c.textContent}"
+                    first = False
+                elif c.nodeName == 'a':
+                    tail = c.textContent
+                else:
+                    line += f" {c.textContent}"
+
+        line = line.replace('  ', ' ').strip()
+        head = head.replace('  ', ' ').strip()
+        if head and line and tail:
+            paragraphs.append((head, line, tail))
+
+    cache[url] = dict(
+        value=paragraphs,
+        etag=resp.headers.get('etag')
+    )
+    return paragraphs
+
+def football_gossip_page(pagenum, entries):
+    nextpage = ttxutils.nextpage(pagenum)
+    page = ttxpage.TeletextPage("Football Gossip",
+                                pagenum)
+
+    maxrows = 18
+    pages = []
+    header = f"{ttxcolour.green()}Gossip column"
+    p = [header]
+    for f in entries:
+        h, l, t = f
+        h = page.fixup(h)
+        l = page.fixup(l)
+        t = page.fixup(t)
+        lines = textwrap.wrap(f"{h}¬{l}",39)
+        rows = []
+        colour = ttxcolour.white()
+        for ll in lines:
+            ll = ll.replace('¬', ttxcolour.cyan())
+            rows.append(f"{colour}{ll}")
+            colour = ttxcolour.cyan()
+        if len(rows[-1]) + len(t) > 40:
+            rows.append(f"{ttxcolour.green()}{t:>39}")
+        else:
+            rows[-1] += f"{ttxcolour.green()}{t}"
+        if ((len(p) + len(rows) <  maxrows)
+            or (len(p) == 0 and len(rows) == maxrows)):
+            if len(p)>1:
+                p.append('')
+            p.extend(rows)
+        else:
+            pages.append(p)
+            p = [header]
+            p.extend(rows)
+    pages.append(p)
+
+    subpage = 0
+    for p in pages:
+        if len(pages) > 1:
+            subpage += 1
+            page.header(pagenum, subpage, status=0xc000)
+        else:
+            page.header(pagenum, subpage, status=0x8000)
+        sport_header(page, 'Football')
+        if len(pages) > 1:
+            index = f"{subpage}/{len(pages)}"
+            p[0] = f"{p[0]:<34}{ttxcolour.white()}{index:>5}"
+        line = 4
+        for r in p:
+            if len(r):
+                page.addline(line, r)
+            line += 1
+        sport_footer(page, 'Football')
+
+    page.save()
+
+
+def football_gossip():
+    try:
+        with open(f"{_config['cachedir']}/football.cache", 'rb') as f:
+            cache = pickle.load(f)
+    except:
+        cache = dict()
+
+    pages = _config['pages']['sport']['football']['gossip']
+    pagenum = pages['page']
+    url = pages['url']
+
+    football_gossip_page(pagenum, football_gossip_entries(url, cache))
+
+    with open(f"{_config['cachedir']}/football.cache", 'wb') as f:
+        pickle.dump(cache, f)
+
+
 def football():
     pages = _config['pages']['sport']['football']
     footballfeed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'football')
@@ -481,6 +612,7 @@ def football():
     # league tables go here
     leagues()
     fixtures()
+    football_gossip()
 
     return [footentries[0], pages['first']]
 
