@@ -20,6 +20,8 @@ def makefrontpage(headlines):
 
     subpage = 1
     for h in headlines:
+        if h is None:
+            continue
         page.header(0x100, subpage, status=0xc000)
         # pp.pprint(h)
         entry, pagenum = h
@@ -56,6 +58,7 @@ def makefrontpage(headlines):
         for l in lines:
             page.addline(line, ttxutils.decode(l))
             line += 1
+        subpage += 1
 
         page.addfasttext(0x101, 0x300, 0x600, 0x199, 0x8ff, 0x199)
         page.save()

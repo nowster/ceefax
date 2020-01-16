@@ -623,6 +623,8 @@ def football():
     entries = footballfeed.get_entries(sport=True,
                                        max = ttxutils.hexdiff(
                                            pages['last'], pages['first']))
+    if not entries:
+        return None
 
     pagenum = pages['first']
     footentries = list()
@@ -669,6 +671,8 @@ def formula1():
                                  max = ttxutils.hexdiff(
                                      pages['last'], pages['first']))
 
+    if not entries:
+        return None
     pagenum = pages['first']
     f1entries = list()
     for contents in entries:
@@ -710,6 +714,9 @@ def cricket():
                                    max = ttxutils.hexdiff(
                                        pages['last'], pages['first']))
 
+    if not raw_entries:
+        return None
+
     pagenum = pages['first']
     entries = list()
     for contents in raw_entries:
@@ -749,6 +756,8 @@ def rugby_union():
     raw_entries = feed.get_entries(sport=True,
                                    max = ttxutils.hexdiff(
                                        pages['last'], pages['first']))
+    if not raw_entries:
+        return None
 
     pagenum = pages['first']
     entries = list()
@@ -785,7 +794,8 @@ def rugby_union_index(entries):
 
 def makesport():
     topfoot = copy.deepcopy(football())
-    topfoot[0]['section'] = "Football"
+    if topfoot:
+        topfoot[0]['section'] = "Football"
 
     return [
         topfoot,

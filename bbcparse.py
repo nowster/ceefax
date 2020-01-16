@@ -41,14 +41,31 @@ def _mkdatetime(t):
 
 class Feed(object):
     def __init__(self, feed, cachename='cache'):
+        self.error = False
         if type(feed) is list:
             self.rss_entries = list()
             for f in feed:
-                self.rss_entries.append(feedparser.parse(f)['entries'])
+                p = feedparser.parse(f)
+                if p.bozo:
+                    self.error = True
+                else:
+                    self.rss_entries.append(p['entries'])
             # Interleave the feeds
             self.rss_entries = _interleave(self.rss_entries)
         else:
-            self.rss_entries = feedparser.parse(feed)['entries']
+            p = feedparser.parse(feed)
+            if p.bozo:
+                self.error = True
+            else:
+                self.rss_entries = feedparser.parse(feed)['entries']
+
+        if self.error:
+            self.parser = None
+            self.cache = None
+            self.fetch = None
+            self.rss_entries = None
+            self.entries = None
+            return
 
         self.parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser(
             indexNames=False
@@ -68,12 +85,15 @@ class Feed(object):
                         del self.cache[x]
         except:
             pass
+        if len(self.rss_entries) == 0:
+            print("ERROR: empty rss list")
         self.entries = list()
 
     def __del__(self):
         _cachedir = _config['cachedir']
-        with open(f"{_cachedir}/{self.cachename}.cache", 'wb') as f:
-            pickle.dump(self.cache, f)
+        if self.cache:
+            with open(f"{_cachedir}/{self.cachename}.cache", 'wb') as f:
+                pickle.dump(self.cache, f)
 
     def good_url(self, link):
         if '/av/' in link:
@@ -92,6 +112,8 @@ class Feed(object):
 
 
     def get_entries(self, sport=False, max=99):
+        if not self.rss_entries:
+            return None
         if self.entries:
             return self.entries
 

@@ -14,6 +14,9 @@ def entertainment():
     entries = feed.get_entries(
         max = ttxutils.hexdiff(pages['last'], pages['first']))
 
+    if not entries:
+        return None
+
     header = [
         "€C€]€U|$xl0l<h<h<t(|$|l4|`<t`<<th<`<t(|$",
         "€C€]€U¬1¬j5j5jwj7} ¬ ¬k5¬j5¬j55¬jwj5¬ ¬",

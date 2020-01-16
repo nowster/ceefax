@@ -203,6 +203,9 @@ def news_scitech(entries, conf):
     page.save()
 
 def makenews():
+
+    headlines = []
+
     region = _config['bbc_news_regions'][_config['bbc_news_region']]
     news = _config['pages']['news']['main']
     regional = _config['pages']['news']['regional']
@@ -217,33 +220,31 @@ def makenews():
     regionalstories = regionalfeed.get_entries(max=numstories)
 
     page = news['first']
-    for story in stories:
-        news_page(page, story)
-        page = ttxutils.nextpage(page)
+    if stories:
+        for story in stories:
+            news_page(page, story)
+            page = ttxutils.nextpage(page)
+        news_index(stories, news)
+        news_headlines(stories, news)
+        news_summary(stories, news)
+        topstory = copy.deepcopy(stories[0])
+        topstory['section'] = 'UK News'
+        headlines.append((topstory, news['first']))
 
     page = regional['first']
-    for story in regionalstories:
-        news_page(page, story)
-        page = ttxutils.nextpage(page)
-
-    news_index(stories, news)
-    news_headlines(stories, news)
-    news_summary(stories, news)
-
-    news_headlines(regionalstories, regional, region['name'])
+    if regionalstories:
+        for story in regionalstories:
+            news_page(page, story)
+            page = ttxutils.nextpage(page)
+        news_headlines(regionalstories, regional, region['name'])
+        topregstory = copy.deepcopy(regionalstories[0])
+        topregstory['section'] += ' News'
+        headlines.append((topregstory, regional['first']))
 
     scitech = _config['pages']['news']['scitech']
     scitechfeed = bbcparse.Feed(rss.bbc_feed(scitech['feed']), "newssci")
     scitechstories = scitechfeed.get_entries()
-    news_scitech(scitechstories, scitech)
+    if scitechstories:
+        news_scitech(scitechstories, scitech)
 
-    topstory = copy.deepcopy(stories[0])
-    topstory['section'] = 'UK News'
-
-    topregstory = copy.deepcopy(regionalstories[0])
-    topregstory['section'] += ' News'
-
-    return [
-        (topstory, news['first']),
-        (topregstory, regional['first']),
-    ]
+    return headlines
