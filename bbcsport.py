@@ -572,7 +572,7 @@ def football_gossip_page(pagenum, entries):
 
 def football_gossip():
     try:
-        with open(f"{_config['cachedir']}/football.cache", 'rb') as f:
+        with open(f"{_config['cachedir']}/footballgoss.cache", 'rb') as f:
             cache = pickle.load(f)
     except:
         cache = dict()
@@ -583,7 +583,7 @@ def football_gossip():
 
     football_gossip_page(pagenum, football_gossip_entries(url, cache))
 
-    with open(f"{_config['cachedir']}/football.cache", 'wb') as f:
+    with open(f"{_config['cachedir']}/footballgoss.cache", 'wb') as f:
         pickle.dump(cache, f)
 
 
