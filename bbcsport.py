@@ -59,10 +59,13 @@ def league(pagenum, url, cache):
     white = True
     row = 1
     pagecount = 0
+    status = 0x8000
+    if pages > 1:
+        status = 0xc000
     for r in table:
         if newpage:
             pagecount += 1
-            page.header(pagenum, subpage)
+            page.header(pagenum, subpage, status=status)
             sport_header(page, 'Football')
             if pages > 1:
                 index = f"{ttxcolour.white()}{pagecount}/{pages}"
@@ -234,7 +237,9 @@ def fixture_page(pagenum, date, dayname, cache):
     for p in pages:
         if len(pages) > 1:
             subpage += 1
-        page.header(pagenum, subpage)
+            page.header(pagenum, subpage, status=0xc000)
+        else:
+            page.header(pagenum, subpage, status=0x8000)
         sport_header(page, 'Football')
         if len(pages) > 1:
             index = f"{subpage}/{len(pages)}"

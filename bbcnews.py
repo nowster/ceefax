@@ -118,7 +118,7 @@ def news_index(entries, conf):
     maxsubpage = int((len(subtitles)+2) / 3)
     for subpage in range(maxsubpage):
         line = 4
-        page.header(pagenum, subpage + 1)
+        page.header(pagenum, subpage + 1, status=0xc000)
         category = newsheaders.newsheader(page, 'index')
         for t in toptitles:
             if line == 10:
@@ -148,7 +148,7 @@ def news_summary(entries, conf):
     offset = 0
     pagenum = conf['first']
     for subpage in range(2):
-        page.header(summarynum, subpage + 1)
+        page.header(summarynum, subpage + 1, status=0xc000)
         newsheaders.newsheader(page, 'summary')
         index = f"{subpage + 1}/2 "
         page.addline(4, f"{index:>40}")
@@ -177,7 +177,7 @@ def news_scitech(entries, conf):
     subpage = 1
     length = len(entries)
     for contents in entries:
-        page.header(pagenum, subpage)
+        page.header(pagenum, subpage, status=0xc000)
         newsheaders.newsheader(page, 'scitechhead')
         line = 4
         line += page.wrapline(line, 21, page.fixup(contents['title']),
