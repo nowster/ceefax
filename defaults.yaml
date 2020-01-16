@@ -349,6 +349,10 @@ pages:
       index: 0x302
       first: 0x303
       last: 0x315
+      gossip:
+        page: 0x338
+        url: "https://www.bbc.co.uk/sport/football/gossip"
+      guide: 0x339
     cricket:
       feed: 'sport/cricket'
       index: 0x340
