@@ -457,23 +457,41 @@ def sport_page(number, contents):
     page.save()
 
 def football_gossip_entries(url, cache):
+    seen = []
     if url in cache:
         entry = cache[url]
+        etag = entry['etag']
+        if 'seen' in entry:
+            seen = entry['seen']
         headers = { 'If-None-Match': entry['etag'] }
     else:
+        etag = None
         entry = None
         headers = None
 
     f = fetch.Fetcher()
+
+    # "seen" works around the CDN sending different etags occasionally
+    resp = f.head(url, headers=headers)
+    if resp.status_code == 304:
+        return entry['value']
+    if resp.status_code == 200:
+        newetag = resp.headers.get('etag')
+        if newetag in seen:
+            cache[url]['etag'] = newetag
+            return entry['value']
+
     resp = f.get(url, headers=headers)
     if resp.status_code == 304:
         return entry['value']
     if resp.status_code != 200:
         print(f"{resp.status_code} on {url}")
         return None
-    if entry and resp.headers.get('etag') == entry['etag']:
+    if entry and (resp.headers.get('etag') == etag):
         return entry['value']
     print(f"Cache miss {url}", flush=True)
+    seen.append(resp.headers.get('etag'))
+    seen = seen[-10:]
 
     parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
     parser.parseStr(resp.content.decode("utf-8"))
@@ -509,7 +527,8 @@ def football_gossip_entries(url, cache):
 
     cache[url] = dict(
         value=paragraphs,
-        etag=resp.headers.get('etag')
+        etag=resp.headers.get('etag'),
+        seen=seen
     )
     return paragraphs
 
