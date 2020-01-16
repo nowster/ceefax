@@ -490,17 +490,17 @@ def football_gossip_entries(url, cache):
             if type(c) is str:
                 if c:
                     if first:
-                        head += f" {c}"
+                        head += c
                     else:
-                        line += f" {c}"
+                        line += c
             else:
                 if (c.nodeName == 'b' and first):
-                    head += f" {c.textContent}"
+                    head += c.textContent
                     first = False
                 elif c.nodeName == 'a':
                     tail = c.textContent
                 else:
-                    line += f" {c.textContent}"
+                    line += c.textContent
 
         line = line.replace('  ', ' ').strip()
         head = head.replace('  ', ' ').strip()
@@ -527,13 +527,19 @@ def football_gossip_page(pagenum, entries):
         h = page.fixup(h)
         l = page.fixup(l)
         t = page.fixup(t)
-        lines = textwrap.wrap(f"{h}¬{l}",39)
+        lines = textwrap.wrap(f"{h}¬\t{l}",39,
+                              expand_tabs=False, replace_whitespace=False)
         rows = []
         colour = ttxcolour.white()
         for ll in lines:
-            ll = ll.replace('¬', ttxcolour.cyan())
-            rows.append(f"{colour}{ll}")
-            colour = ttxcolour.cyan()
+            if '\t' in ll or '¬' in ll:
+                ll = ll.replace('¬', '\t')
+                ll = ll.replace('\t\t', '\t')
+                ll = ll.replace('\t', ttxcolour.cyan())
+                rows.append(f"{colour}{ll}")
+                colour = ttxcolour.cyan()
+            else:
+                rows.append(f"{colour}{ll}")
         if len(rows[-1]) + len(t) > 40:
             rows.append(f"{ttxcolour.green()}{t:>39}")
         else:
