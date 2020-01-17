@@ -96,6 +96,8 @@ class Feed(object):
                 pickle.dump(self.cache, f)
 
     def good_url(self, link):
+        if link is None:
+            return False
         if '/av/' in link:
             return False
         if '/news/in-pictures' in link:
