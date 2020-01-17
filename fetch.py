@@ -29,8 +29,6 @@ class Fetcher(metaclass=_Singleton):
         self._cached_sess = CacheControl(requests.Session(),
                                          cache=FileCache(cachefile))
 
-        self.head = self._cached_sess.head
-
     def get(self, *args, **kwargs):
         try:
             return self._cached_sess.get(*args, **kwargs)
@@ -42,6 +40,22 @@ class Fetcher(metaclass=_Singleton):
             print ("Error Connecting:",errc)
             time.sleep(1)
             return self.get(*args, **kwargs)
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            print(e, flush=True)
+            sys.exit(1)
+
+    def head(self, *args, **kwargs):
+        try:
+            return self._cached_sess.head(*args, **kwargs)
+        except requests.exceptions.Timeout as errc:
+            print ("Timeout:",errc)
+            time.sleep(1)
+            return self.head(*args, **kwargs)
+        except requests.exceptions.ConnectionError as errc:
+            print ("Error Connecting:",errc)
+            time.sleep(1)
+            return self.head(*args, **kwargs)
         except requests.exceptions.RequestException as e:
             # catastrophic error. bail.
             print(e, flush=True)
