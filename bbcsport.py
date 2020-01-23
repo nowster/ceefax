@@ -54,6 +54,8 @@ def league(pagenum, url, cache):
             count += 1
 
     pages = math.ceil(count / 14)
+    if len(table) == 12:
+        pages = 1
 
     newpage = True
     white = True
@@ -105,7 +107,7 @@ def league(pagenum, url, cache):
                              ttxcolour.red()))
             line += 1
 
-        if line > 21:
+        if (line > 21 and len(table)>12) or (line > 22):
             subpage += 1
             newpage = True
             line = 24
