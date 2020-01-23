@@ -379,8 +379,8 @@ football_league_tables:
   - [0x325,"https://www.bbc.co.uk/sport/football/championship/table"]
   - [0x326,"https://www.bbc.co.uk/sport/football/league-one/table"]
   - [0x327,"https://www.bbc.co.uk/sport/football/league-two/table"]
-  - [0x328,"https://www.bbc.co.uk/sport/football/scottish-league-one/table"]
-  - [0x329,"https://www.bbc.co.uk/sport/football/irish-premiership/table"]
+  - [0x328,"https://www.bbc.co.uk/sport/football/scottish-premiership/table"]
+  - [0x329,"https://www.bbc.co.uk/sport/football/scottish-championship/table"]
 
 football_fixtures_url: 'https://www.bbc.co.uk/sport/football/scores-fixtures'
 
@@ -395,6 +395,9 @@ football_fixtures:
 
 football_fixture_leagues:
   - THE FA CUP
+  - WORLD CUP
+  - EUROPEAN CHAMPIONSHIP
+  - CHAMPIONS LEAGUE
   - PREMIER LEAGUE
   - CHAMPIONSHIP
   - LEAGUE ONE
