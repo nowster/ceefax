@@ -720,6 +720,219 @@ def f1_index(entries):
                         fasttext=[pages['first'], 0x300, 0x301, 0x300],
                         increment=2)
 
+def cricket_fixtures_table(url, cache):
+    if url in cache:
+        entry = cache[url]
+        headers = { 'If-None-Match': entry['etag'] }
+    else:
+        entry = None
+        headers = None
+
+    f = fetch.Fetcher()
+    resp = f.get(url, headers=headers)
+    if resp.status_code == 304:
+        return entry['value']
+    if resp.status_code != 200:
+        print(f"{resp.status_code} on {url}")
+        return None
+    if entry and resp.headers.get('etag') == entry['etag']:
+        return entry['value']
+    print(f"Cache miss {url}", flush=True)
+
+    parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
+    parser.parseStr(resp.text)
+    spans = parser.getElementsByClassName('qa-fixture-block')
+    table = []
+    for span_row in spans:
+        children = span_row.getAllChildNodes()
+        series = children.getElementsByTagName('h3')
+        series = series[1].textContent.upper()
+        if series.upper() not in _config['cricket_series']:
+            continue
+        block = []
+        matches = children.getElementsByTagName('ul')
+        matches = matches[0].getAllChildNodes().getElementsByTagName('li')
+        for match in matches:
+            nodes = match.getAllChildNodes()
+            link = nodes.getElementsByTagName('a')
+            if link:
+                link = link[0].getAttribute('href')
+
+            home_team = _get_span(nodes, 'sp-c-head-to-head__team-name-trunc',
+                                  'abbr',0)
+            away_team = _get_span(nodes, 'sp-c-head-to-head__team-name-trunc',
+                                  'abbr',1)
+            home_score = _get_span(nodes, 'sp-c-head-to-head__home-team-scores',
+                                   sub_class='sp-c-head-to-head__cricket-score',
+                                   as_list=True)
+            away_score = _get_span(nodes, 'sp-c-head-to-head__away-team-scores',
+                                   sub_class='sp-c-head-to-head__cricket-score',
+                                   as_list=True)
+            status = _get_span(nodes, 'sp-c-head-to-head__status')
+            title = _get_span(nodes, 'sp-c-head-to-head__title')
+            venue = _get_span(nodes, 'sp-c-head-to-head__venue')
+            time = _get_span(nodes, 'qa-score-time')
+            home_batting = _get_span(nodes,
+                                     'sp-c-head-to-head__team-indicator--home')
+            away_batting = _get_span(nodes,
+                                     'sp-c-head-to-head__team-indicator--away')
+            block.append(dict(
+                home_team=home_team,
+                away_team=away_team,
+                home_score=home_score,
+                away_score=away_score,
+                status=status,
+                link=link,
+                title=title,
+                time=time,
+                venue=venue,
+                home_batting=bool(home_batting),
+                away_batting=bool(away_batting),
+            ))
+
+        table.append(dict(
+            series=series,
+            matches=block,
+        ))
+
+    cache[url] = dict(
+        value=table,
+        etag=resp.headers.get('etag')
+    )
+
+    return table
+
+def cricket_fixture_page(pagenum, dates, cache):
+    nextpage = ttxutils.nextpage(pagenum)
+    page = ttxpage.TeletextPage("Cricket Fixtures",
+                                pagenum)
+
+    maxrows = 18
+    pages = []
+    for offset in dates:
+        date = datetime.date.today() + datetime.timedelta(days=offset)
+        if offset == 0:
+            dayname = "Today"
+        elif offset == -1:
+            dayname = "Yesterday"
+        else:
+            dayname = date.strftime("%A")
+
+        isodate = date.isoformat()
+        url = f"{_config['cricket_fixtures_url']}/{isodate}"
+        fixes = cricket_fixtures_table(url, cache)
+        header = f"{ttxcolour.yellow()}{dayname}'s Matches"
+        p = [header]
+        for f in fixes:
+            rows = []
+            r = f"{ttxcolour.white()}{page.fixup(f['series']).upper()}"
+            rows.append(f"{r:<38}")
+            for m in f['matches']:
+                if len(rows)>1:
+                    rows.append('')
+                home_team = page.fixup(m['home_team'])
+                away_team = page.fixup(m['away_team'])
+                if m['home_batting']:
+                    home_team = f"{home_team:<.16}{ttxcolour.yellow()}*"
+                    r = f"{ttxcolour.cyan()}{home_team:<18.18}"
+                else:
+                    r = f"{ttxcolour.cyan()}{home_team:<17.17}"
+                r += f"{ttxcolour.white()}v"
+                if m['away_batting']:
+                    away_team = f"{away_team:<.16}{ttxcolour.yellow()}*"
+                    r += f"{ttxcolour.cyan()}{away_team:<18.18}"
+                else:
+                    r += f"{ttxcolour.cyan()}{away_team:<17.17}"
+                rows.append(r)
+                if m['title']:
+                    rows.append(f"{ttxcolour.green()}{page.fixup(m['title'])}")
+                if m['home_score'] and m['away_score']:
+                    for innings in range(2):
+                        if innings < len(m['home_score']):
+                            a = page.fixup(m['home_score'][innings])
+                        else:
+                            a = ''
+                        if innings < len(m['away_score']):
+                            b = page.fixup(m['away_score'][innings])
+                        else:
+                            b = ''
+                        if a or b:
+                            r = f"{ttxcolour.cyan()}{a:<17.17}   {b:<17.17}"
+                            rows.append(r)
+
+                r = ''
+                if m['time']:
+                    if m['time'] != 'LIVE':
+                        if r:
+                            r += ': '
+                        r += page.fixup(m['time'])
+                if m['status']:
+                    status = page.fixup(m['status'])
+                    r += f"¬\t{status}"
+                if m['venue']:
+                    venue = page.fixup(m['venue'])
+                    r += f"¬\t{venue}"
+                colour = ttxcolour.green()
+                for ll in textwrap.wrap(r, 39, expand_tabs=False,
+                                        replace_whitespace=False):
+                    if '\t' in ll or '¬' in ll:
+                        ll = ll.replace('¬', '\t')
+                        ll = ll.replace('\t\t', '\t')
+                        if ll.startswith('\t'):
+                            ll = ll.replace('\t','')
+                            colour = ttxcolour.magenta()
+                        else:
+                            ll = ll.replace('\t', ttxcolour.magenta())
+                        rows.append(f"{colour}{ll}")
+                        colour = ttxcolour.magenta()
+                    else:
+                        rows.append(f"{colour}{ll}")
+            if ((len(p) + len(rows) <  maxrows)
+                or (len(p) == 0 and len(rows) == maxrows)):
+                if len(p)>1:
+                    p.append('')
+                p.extend(rows)
+            else:
+                pages.append(p)
+                p = [header]
+                p.extend(rows)
+        if len(fixes) == 0:
+            p.append('')
+            p.append(f'{ttxcolour.cyan()}No matches today.')
+        pages.append(p)
+
+    subpage = 0
+    for p in pages:
+        if len(pages) > 1:
+            subpage += 1
+            page.header(pagenum, subpage, status=0xc000)
+        else:
+            page.header(pagenum, subpage, status=0x8000)
+        sport_header(page, 'Cricket')
+        if len(pages) > 1:
+            index = f"{subpage}/{len(pages)}"
+            p[0] = f"{p[0]:<34.34}{ttxcolour.white()}{index:>5}"
+        line = 4
+        for r in p:
+            if len(r):
+                page.addline(line, r)
+            line += 1
+        sport_footer(page, 'Cricket')
+
+    page.save()
+
+def cricket_fixtures():
+    try:
+        with open(f"{_config['cachedir']}/cricket_fixtures.cache", 'rb') as f:
+            cache = pickle.load(f)
+    except:
+        cache = dict()
+
+    for page, offsets in _config['cricket_fixtures']:
+        cricket_fixture_page(page, offsets, cache)
+
+    with open(f"{_config['cachedir']}/cricket_fixtures.cache", 'wb') as f:
+        pickle.dump(cache, f)
 
 def cricket():
     pages = _config['pages']['sport']['cricket']
@@ -745,6 +958,7 @@ def cricket():
             break
 
     cricket_index(entries)
+    cricket_fixtures()
 
     return [entries[0], pages['first']]
 
@@ -756,8 +970,8 @@ def cricket_index(entries):
         '€W"###"###"###€T////,,-,,-.,,-.,-,/,///////'
     ]
     footer= [
-        "€D€]€CCEEFAX CRICKET SECTION PAGE 340   ",
-        "€D€]€CBBC WEBSITE: bbc.co.uk/cricket    ",
+        "€D€]€CScorecards 350  Fixtures 357/358/359",
+        "€D€]€CCRICKET 340    WEB bbc.co.uk/cricket",
         "€ANext page  €BCricket €CHeadlines €FSport ",
     ]
     ttxutils.index_page("Cricket", pages, header, footer, entries,
