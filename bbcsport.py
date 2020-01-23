@@ -256,12 +256,18 @@ def fixture_page(pagenum, date, dayname, cache):
     page.save()
 
 
-def _get_span(nodes, class_name, tag_name=None, index=0):
+def _get_span(nodes, class_name, tag_name=None, index=0,
+              sub_class=None, as_list=False):
     values = nodes.getElementsByClassName(class_name)
     if tag_name:
-        #children = values.getAllChildNodes(Nodes)
         values = values.getElementsByTagName(tag_name)
-    if len(values) > index:
+    if sub_class:
+        values = values.getElementsByClassName(sub_class)
+    if not values:
+        return None
+    elif as_list:
+        return [v.textContent for v in values]
+    elif len(values) > index:
         return values[index].textContent
     else:
         return None
