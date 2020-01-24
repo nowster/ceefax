@@ -255,14 +255,24 @@ def fixture_page(pagenum, date, dayname, cache):
 
     page.save()
 
+def _recursive_remove_class(values, classname):
+    if values:
+        remove = values.getElementsByClassName(classname)
+        for v in values:
+            v.removeChildren(remove)
+            _recursive_remove_class(v.getChildren(), classname)
 
-def _get_span(nodes, class_name, tag_name=None, index=0,
-              sub_class=None, as_list=False):
-    values = nodes.getElementsByClassName(class_name)
+def _get_span(nodes, class_name=None, tag_name=None, index=0,
+              sub_class=None, as_list=False, ignore=None):
+    values = nodes
+    if class_name:
+        values = values.getElementsByClassName(class_name)
     if tag_name:
         values = values.getElementsByTagName(tag_name)
     if sub_class:
         values = values.getElementsByClassName(sub_class)
+    if ignore:
+        _recursive_remove_class(values, ignore)
     if not values:
         return None
     elif as_list:
