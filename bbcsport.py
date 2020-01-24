@@ -528,7 +528,13 @@ def football_gossip_entries(url, cache):
                     line += c.textContent
 
         line = line.replace('  ', ' ').strip()
+        line = line.replace('()','').strip()
+        while line.endswith('(') or line.endswith(')'):
+            line = line[:-1]
         head = head.replace('  ', ' ').strip()
+        tail = tail.replace('(','')
+        tail = tail.replace(')','').strip()
+        tail = f"({tail})"
         if head and line and tail:
             paragraphs.append((head, line, tail))
 
