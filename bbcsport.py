@@ -888,6 +888,10 @@ def cricket_scorecard_page(pagenum, url, cache):
                 batsman = page.fixup(names.shorten(batsman))
                 if how_out == 'not out':
                     colour = ttxcolour.white()
+                elif how_out.startswith("run out"):
+                    s = re.search(r'(\(.+?\))', how_out)
+                    how_out = "run out"
+                    bowler = s[1]
                 else:
                     if ' ' in how_out:
                         how, _, fielder = how_out.partition(' ')
