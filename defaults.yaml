@@ -418,3 +418,7 @@ cricket_fixtures:
   - [0x357, [-1] ]
   - [0x358, [0] ]
   - [0x359, [1,2,3] ]
+
+cricket_scorecards:
+  first: 0x350
+  last: 0x356
