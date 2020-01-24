@@ -846,13 +846,13 @@ def cricket_fixture_page(pagenum, dates, cache):
                 rows.append(r)
                 if m['title']:
                     rows.append(f"{ttxcolour.green()}{page.fixup(m['title'])}")
-                if m['home_score'] and m['away_score']:
+                if m['home_score'] or m['away_score']:
                     for innings in range(2):
-                        if innings < len(m['home_score']):
+                        if m['home_score'] and innings < len(m['home_score']):
                             a = page.fixup(m['home_score'][innings])
                         else:
                             a = ''
-                        if innings < len(m['away_score']):
+                        if m['away_score'] and innings < len(m['away_score']):
                             b = page.fixup(m['away_score'][innings])
                         else:
                             b = ''
@@ -862,15 +862,14 @@ def cricket_fixture_page(pagenum, dates, cache):
 
                 r = ''
                 if m['time']:
-                    if m['time'] != 'LIVE':
-                        if r:
-                            r += ': '
+                    if m['time'] not in ['LIVE', 'V']:
                         r += page.fixup(m['time'])
                 if m['status']:
                     status = page.fixup(m['status'])
                     r += f"¬\t{status}"
                 if m['venue']:
-                    venue = page.fixup(m['venue'])
+                    venue = m['venue'].replace('Venue: ','').strip()
+                    venue = page.fixup(venue)
                     r += f"¬\t{venue}"
                 colour = ttxcolour.green()
                 for ll in textwrap.wrap(r, 39, expand_tabs=False,
