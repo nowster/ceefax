@@ -57,7 +57,7 @@ def index_page(category : str,
             title = r
         title = page.truncate(title, 35, ' ')
         page.addline(line,
-                     f"{colour}{title:<35}{number_colour}{number:03x}")
+                     f"{colour}{title:<35.35}{number_colour}{number:03x}")
         colour = ttxcolour.cyan()
         line += increment
         index += 1
