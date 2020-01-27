@@ -80,6 +80,42 @@ def index_page(category : str,
         page.addfasttext(pages['first'], 0x100, 0x101, 0x100, 0x8ff, 0x199)
     page.save()
 
+def generic_page(category : str,
+                 pagenum : int,
+                 pages : dict,
+                 header : List[str],
+                 footer : List[str],
+                 lines : List[str],
+                 fasttext : Optional[List[int]] = None):
+    page = ttxpage.TeletextPage(
+        f"{category} Page {pagenum:03x}",
+        pagenum)
+    page.header(pagenum)
+    line = 1
+    for l in header:
+        page.addline(line, decode(l))
+        line += 1
+
+    for ll in lines:
+        page.addline(line, decode(ll))
+        line += 1
+
+    line = 25 - len(footer)
+    for l in footer:
+        page.addline(line, decode(l))
+        line += 1
+    if fasttext and len(fasttext) in [3, 4, 6]:
+        if len(fasttext) == 3:
+            f = [pages['index'], *fasttext, 0x8ff, 0x199]
+        elif len(fasttext) == 4:
+            f = [*fasttext, 0x8ff, 0x199]
+        else:
+            f = fasttext
+        page.addfasttext(*f)
+    else:
+        page.addfasttext(pages['index'], 0x100, 0x101, 0x100, 0x8ff, 0x199)
+    page.save()
+
 def news_page(category : str,
               pages : dict,
               number : int,

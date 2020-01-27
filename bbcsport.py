@@ -643,6 +643,55 @@ def football_gossip():
         pickle.dump(cache, f)
 
 
+def football_guide(pages):
+    pagenum = pages['guide']
+    header = [
+        "€Wj#3kj#3kj#3k€T€]€R h<h<|h<|(|$|l4|l4| |",
+        "€Wj $kj $kj 'k€T€]€R j7ju¬ju¬ ¬ ¬{4¬k5¬0¬0",
+        '€W"###"###"###€T///-.-,,-,,/,/,,.,-.,.,.//'
+    ]
+    footer = [
+        "€D€]€C    MAIN FOOTBALL INDEX ON PAGE 302",
+        "€ACricket  €BFootball  €CTop Sport  €FSport",
+    ]
+    lines = [
+        "€B GUIDE TO FOOTBALL PAGES",
+        "€G LATEST NEWS `€FStories/reports€G303-315",
+        "€F                     Gossip column€G338",
+        "",
+        "",
+        "€G FIXTURES/RESULTS"
+    ]
+
+    pgs = []
+    for page, offset, label in _config['football_fixtures']:
+        day = datetime.date.today() + datetime.timedelta(days=offset)
+        if not label:
+            label = day.strftime("%A")
+        pgs.append((page, label.capitalize()))
+
+    stride = math.ceil(len(pgs) / 2)
+    for i in range(stride):
+        page,label = pgs[i]
+        l = f"{ttxcolour.cyan()} {label:<9.9}{ttxcolour.white()}{page:03x}"
+        if i + stride < len(pgs):
+            page,label = pgs[i+stride]
+            l += f"{ttxcolour.cyan()} {label:<9.9}{ttxcolour.white()}{page:03x}"
+        lines.append(l)
+
+
+    lines += [
+        "",
+        "€G TABLES",
+        "€F Premier league€G324€FLeague Two    €G327",
+        "€F Championship  €G325€FScottish prem.€G328",
+        "€F League One    €G326€FScottish champ€G329",
+    ]
+
+    ttxutils.generic_page("Football", pagenum, pages, header, footer,
+                          lines, [0x340, 0x302, 0x301, 0x300])
+
+
 def football():
     pages = _config['pages']['sport']['football']
     footballfeed = bbcparse.Feed(rss.bbc_feed(pages['feed']), 'football')
@@ -671,6 +720,7 @@ def football():
     leagues()
     fixtures()
     football_gossip()
+    football_guide(pages)
 
     return [footentries[0], pages['first']]
 
