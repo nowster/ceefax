@@ -406,3 +406,19 @@ football_fixture_leagues:
   - SCOTTISH CUP
   - SCOTTISH CHAMPIONSHIP
   - SCOTTISH LEAGUE ONE
+
+cricket_fixtures_url: 'https://www.bbc.co.uk/sport/cricket/scores-fixtures'
+
+cricket_series:
+  - INTERNATIONAL TEST MATCH SERIES
+  - INTERNATIONAL TWENTY20 MATCH
+  - ONE-DAY TOUR MATCH
+
+cricket_fixtures:
+  - [0x357, [-1] ]
+  - [0x358, [0] ]
+  - [0x359, [1,2,3] ]
+
+cricket_scorecards:
+  first: 0x350
+  last: 0x356
