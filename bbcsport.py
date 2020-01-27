@@ -860,6 +860,8 @@ def cricket_scorecard_page(pagenum, url, cache):
     match = match.replace(' -','')
     match = match.replace(' SERIES','')
     match = match.replace('UNDER-','U')
+    short_match = match.replace("MATCH", "").strip()
+    short_match = re.sub(r"\s*DAY\s+\d+\s+OF\s+\d+.*", r"", short_match)
     match = re.sub(r'DAY\s+(\d+)\s+OF\s+\d+.*',
                    r'(Day \1)', match)
     if data['venue']:
@@ -982,6 +984,8 @@ def cricket_scorecard_page(pagenum, url, cache):
         page.addfasttext(nextpage, index, 0x301, 0x300, 0x8FF, 0x199)
 
     page.save()
+
+    return f"{short_match}: {data['home_name']} v {data['away_name']}"
 
 def cricket_fixtures_table(url, cache):
     if url in cache:
@@ -1196,6 +1200,7 @@ def cricket_fixtures():
 
     scores = _config['cricket_scorecards']['first']
     scores_last = _config['cricket_scorecards']['last']
+    scorecards = []
 
     for page, offsets in _config['cricket_fixtures']:
         links = cricket_fixture_page(page, offsets, cache)
@@ -1203,11 +1208,13 @@ def cricket_fixtures():
             for l in links:
                 l = f'https://www.bbc.co.uk{l}'
                 if scores <= scores_last:
-                    cricket_scorecard_page(scores, l, cache)
+                    match = cricket_scorecard_page(scores, l, cache)
+                    scorecards.append((scores, match))
                     scores = ttxutils.nextpage(scores)
 
     with open(f"{_config['cachedir']}/cricket_fixtures.cache", 'wb') as f:
         pickle.dump(cache, f)
+    return scorecards
 
 def cricket():
     pages = _config['pages']['sport']['cricket']
@@ -1232,25 +1239,31 @@ def cricket():
         if pagenum > pages['last']:
             break
 
-    cricket_index(entries)
-    cricket_fixtures()
+    scorecards = cricket_fixtures()
+    cricket_index(entries, scorecards)
 
     return [entries[0], pages['first']]
 
-def cricket_index(entries):
+def cricket_index(entries,scorecards):
     pages = _config['pages']['sport']['cricket']
     header = [
         '€Wj#3kj#3kj#3k€T€]€R  |,h<|h4|,h4|h<(|$',
         "€Wj $kj $kj 'k€T€]€R  ¬pj7}j5¬pj7}jw ¬",
         '€W"###"###"###€T////,,-,,-.,,-.,-,/,///////'
     ]
-    footer= [
-        "€D€]€CScorecards 350  Fixtures 357/358/359",
+    footer = []
+    for pp, mm in scorecards:
+        if not footer:
+            footer.append(f"{ttxcolour.yellow()}Scorecards")
+        footer.append(f"{ttxcolour.cyan()}{mm:<35.35}"
+                      f"{ttxcolour.white()}{pp:03x}")
+    footer.extend( [
+        "€D€]€C                Fixtures 357/358/359",
         "€D€]€CCRICKET 340    WEB bbc.co.uk/cricket",
         "€ANext page  €BCricket €CHeadlines €FSport ",
-    ]
+    ])
     ttxutils.index_page("Cricket", pages, header, footer, entries,
-                        fasttext=[0x300, 0x301, 0x300], increment=2)
+                        fasttext=[0x300, 0x301, 0x300], increment=1)
 
 
 def rugby_union():
