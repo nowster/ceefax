@@ -651,7 +651,7 @@ def football_guide(pages):
         '€W"###"###"###€T///-.-,,-,,/,/,,.,-.,.,.//'
     ]
     footer = [
-        "€D€]€C    MAIN FOOTBALL INDEX ON PAGE 302",
+        "€D€]€C  MAIN FOOTBALL INDEX ON PAGE 302",
         "€ACricket  €BFootball  €CTop Sport  €FSport",
     ]
     lines = [
