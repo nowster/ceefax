@@ -44,6 +44,10 @@ format](https://zxnet.co.uk/teletext/documents/ttiformat.pdf).
 
       pip3 install PyYAML
 
+* MetOffer. Fixed version included here as
+  [upstream version](https://github.com/sludgedesk/metoffer)
+  has bugs which haven't been fixed for 18 months.
+
 ## Credits
 
 I'm indebted to Nathan for originally writing `makeceefax.php`, and
