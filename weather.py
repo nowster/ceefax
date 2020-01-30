@@ -10,6 +10,8 @@ import dateutil.tz
 import dateutil.utils
 import datetime
 import pickle
+import textwrap
+import re
 import config
 
 _config = config.Config().config
@@ -237,6 +239,99 @@ def weathermaps(W):
     page.save()
 
 
+def weatherregion(W):
+    cfg = _config["weather"]
+    region = _config["bbc_news_regions"][_config["bbc_news_region"]]
+
+    wx_text = W.text_forecast(
+        metoffer.REGIONAL_FORECAST, regions[region["weather"]]
+    )
+    headline = wx_text.data[0][1]
+
+    head1 = wx_text.data[1][0].replace(":", "")
+    head2 = wx_text.data[2][0].replace(":", "")
+    body1 = wx_text.data[1][1]
+    body2 = wx_text.data[2][1]
+    min = None
+    max = None
+
+    if "Minimum Temperature" in body1:
+        s = re.search(r"Minimum Temperature (-?\d+)C", body1)
+        min = s[1]
+        s = re.search(r"Maximum Temperature (-?\d+)C", body2)
+        max = s[1]
+    else:
+        s = re.search(r"Minimum Temperature (-?\d+)C", body2)
+        min = s[1]
+        s = re.search(r"Maximum Temperature (-?\d+)C", body1)
+        max = s[1]
+
+    body1 = re.sub(r" M(ax|in)imum Temperature -?\d+C.*", r"", body1)
+    body2 = re.sub(r" M(ax|in)imum Temperature -?\d+C.*", r"", body2)
+
+    header = [
+        "€Wh,,lh,,lh,,l€T||,<<|,,|,,|,,|l<l,,<,,l||",
+        "€Wj 1nj 1nj =n€T€]€S¬jj5¬shw{4k7juz5¬sjw{%",
+        "€W*,,.*,,.*,,.€T€]€Sozz%¬pj5j5j5j5j5¬pj5j5",
+        "1234567890123€T//-,,/,,-.-.-.-.-.,,-.-.//",
+    ]
+    footer = [
+        "€T€]€G     REGIONAL€CNews€G160€CWeather€G302",
+        "€T€]€GNATIONAL€CMain menu€G100€CWeather€G400",
+        "€AOutlook  €BSport    €CWeather  €FMain Menu",
+    ]
+    short_name = f"{region['medium']:^13.13}"
+    header[3] = short_name + header[3][13:]
+
+    page = ttxpage.TeletextPage("Weather Page", cfg["regional"])
+
+    subpage = 1
+    for h, b in [(head1, body1), (head2, body2)]:
+        lines = textwrap.wrap(page.fixup(b), 19)
+        rows = ["", f"{ttxcolour.yellow()}{h.upper()}", ""]
+        for l in range(13):
+            try:
+                t = lines[l]
+            except:
+                t = ""
+            t = (
+                f"{ttxcolour.green()}{t:<19.19}"
+                f"{ttxcolour.colour(ttxcolour.MOSAICYELLOW)}5"
+            )
+            if l == 0:
+                t += f"    {ttxcolour.yellow()}STATISTICS"
+            elif l == 2:
+                t += f"    {ttxcolour.white()}Maximum"
+            elif l == 3:
+                t += f"{ttxcolour.white()}Temperature{ttxcolour.yellow()}{max}C"
+            elif l == 5:
+                t += f"    {ttxcolour.white()}Minimum"
+            elif l == 6:
+                t += f"{ttxcolour.white()}Temperature{ttxcolour.yellow()}{min}C"
+            rows.append(t)
+        bot = f"{subpage}/2"
+        rows.append(f"{bot:>39.39}")
+
+        page.header(cfg["regional"], subpage, status=0xC000)
+        line = 1
+        for l in header:
+            page.addline(line, ttxutils.decode(l))
+            line += 1
+        for ll in rows:
+            page.addline(line, ll)
+            line += 1
+        line = 25 - len(footer)
+        for l in footer:
+            page.addline(line, ttxutils.decode(l))
+            line += 1
+        page.addfasttext(
+            cfg["national"], 0x300, cfg["index"], 0x100, 0x8FF, 0x199
+        )
+        subpage += 1
+    page.save()
+    return headline
+
+
 def makeweather():
     W = WeatherCache()
     if not W.valid():
@@ -244,6 +339,7 @@ def makeweather():
         return
 
     weathermaps(W)
+    regionheadline = weatherregion(W)
 
 
 def main():
