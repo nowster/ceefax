@@ -68,6 +68,39 @@ weathers = {
     29: "Thunder shower",
     30: "Thunder",
 }
+short_weathers = {
+    0: "clear",
+    1: "sunny",
+    2: "pt cldy",
+    3: "pt cldy",
+    4: "notused",
+    5: "mist",
+    6: "fog",
+    7: "cloudy",
+    8: "ovrcast",
+    9: "lt rain",
+    10: "lt rain",
+    11: "drizzle",
+    12: "Lt Rain",
+    13: "hy shwr",
+    14: "hy shwr",
+    15: "hy rain",
+    16: "sleet s",
+    17: "sleet s",
+    18: "sleet",
+    19: "hail sh",
+    20: "hail sh",
+    21: "hail",
+    22: "lt.snow",
+    23: "lt.snow",
+    24: "lt snow",
+    25: "hy.snow",
+    26: "hy.snow",
+    27: "hy Snow",
+    28: "thnd sh",
+    29: "thnd sh",
+    30: "thunder",
+}
 
 maporder = {
     "highlands": 0,
@@ -149,6 +182,24 @@ class WeatherCache(object):
         self.cache[key] = value
         return value
 
+    def loc_observations(self, request, cache_hours=None):
+        if cache_hours is None:
+            cache_hours = self.cache_hours
+        key = f"observations!{request}"
+        if key in self.cache:
+            value = self.cache[key]
+            if self._cache_value_valid(value.data_date, cache_hours):
+                return value
+        w = self._M.loc_observations(request)
+        try:
+            value = metoffer.Weather(w)
+        except:
+            print(f"ERROR: {key}")
+            print(repr(w))
+            raise
+        self.cache[key] = value
+        return value
+
 
 def firstmap(locs):
     slocs = sorted(locs, key=lambda l: maporder[l])
@@ -157,22 +208,29 @@ def firstmap(locs):
 
 def weathermaps(W):
     cfg = _config["weather"]
-    if datetime.datetime.now().hour > 16 or datetime.datetime.now().hour < 4:
-        pages = (1, 2, 3)
+    if datetime.datetime.now().hour > 16:
+        advance = 1
     else:
-        pages = (0, 1, 2)
+        advance = 0
 
     pagenum = cfg["maps"]
     subpage = 1
 
     page = ttxpage.TeletextPage("Weather Maps", pagenum, time=10)
-    for index in pages:
+    for index in range(3):
         caption = None
+        advanced = False
         page.header(pagenum, subpage, status=0xC000)
         region_wx = dict()
         for reg_name, reg_id in region_ids.items():
             w = W.loc_forecast(reg_id, metoffer.DAILY)
-            now = w.data[index]
+            now = w.data[index + advance]
+            if (not advanced and
+                now["timestamp"][0].date() < datetime.datetime.now().date()):
+                # handle overnight transition
+                advanced = True
+                advance += 1
+                now = w.data[index + advance]
             wx_type = now["Weather Type"][0]
             wx_type = weathers.get(wx_type, "N/A")
             if wx_type in region_wx:
@@ -191,7 +249,7 @@ def weathermaps(W):
 
         for city_name, city_id in city_ids.items():
             w = W.loc_forecast(city_id, metoffer.DAILY)
-            now = w.data[index]
+            now = w.data[index + advance]
             if not caption:
                 caption = now["timestamp"][0].strftime("%A")
                 if now["timestamp"][1] == "Night":
@@ -402,6 +460,131 @@ def weatheroutlook(W):
     return headline
 
 
+def weatherobservations(W):
+    cfg = _config["weather"]
+
+    minimum = 9999
+    maximum = -9999
+    rows = []
+    timestamp = None
+    for city, num in observation_ids.items():
+        obs = W.loc_observations(num, cache_hours=1).data
+        time = None
+        temp = '-'
+        wind_speed = '-'
+        wind_dir = '-'
+        pressure = '-'
+        trend = '-'
+        weather_type = None
+        for o in obs:
+            if "timestamp" in o:
+                time = o["timestamp"][0]
+            if "Temperature" in o:
+                temp = round(float(o["Temperature"][0]))
+            if "Wind Speed" in o:
+                wind_speed = o["Wind Speed"][0]
+            if "Wind Direction" in o:
+                wind_dir = o["Wind Direction"][0]
+            if "Pressure" in o:
+                pressure = o["Pressure"][0]
+            if "Pressure Tendency" in o:
+                trend = o["Pressure Tendency"][0]
+            if "Weather Type" in o:
+                weather_type = o["Weather Type"][0]
+        if len(rows) % 2 == 1:
+            row_colour = ttxcolour.white()
+        else:
+            row_colour = ttxcolour.cyan()
+        if trend == "F":
+            trend_colour = ttxcolour.green()
+        elif trend == "S":
+            trend_colour = ttxcolour.white()
+        else:
+            trend_colour = ttxcolour.cyan()
+        row = f"{row_colour}{city:<12.12}{temp:>4}{wind_dir:>4}{wind_speed:>3}"
+        row += f"{pressure:>6}{trend_colour}{trend}{row_colour}"
+        if weather_type is not None:
+            row += short_weathers[weather_type]
+        else:
+            row += "n/a"
+        rows.append(row)
+        if timestamp is None or time > timestamp:
+            timestamp = time
+        if temp:
+            if temp < minimum:
+                minimum = temp
+            if temp > maximum:
+                maximum = temp
+
+    header = [
+        "␗j#3kj#3kj#3k␔␝␑␓h44|h<h<|(|$|h4|$|l    ",
+        "␗j $kj $kj 'k␔␝␑␓*uu?jwj7␡ ␡ ␡k5␡1␡k4   ",
+        '␗"###"###"###␔////,,.-,-.,/,/,-.,.,-.///',
+    ]
+
+    temps_c = []
+    temps_f = []
+    steps = (maximum - minimum) / 10
+    if steps < 1:
+        steps = 1
+        minimum = (minimum + maximum) // 2 - 5
+    for i in range(11):
+        temp_c = round(minimum + i * steps)
+        temp_f = round((temp_c * 1.8) + 32)
+        c = str(temp_c)
+        f = str(temp_f)
+        l = max(len(c), len(f))
+        temps_c.append(f"{c:>{l}}")
+        temps_f.append(f"{f:>{l}}")
+
+    footer = []
+    footer.append(ttxutils.decode("   ␃pressure␆R␃rising␇S␃steady␂F␃falling"))
+    footer.append("")
+    back = (
+        ttxcolour.blue()
+        + ttxcolour.colour(ttxcolour.NEW_BACK)
+        + ttxcolour.yellow()
+    )
+    footer.append(f"{back}C= " + " ".join(temps_c))
+    footer.append(f"{back}F= " + " ".join(temps_f))
+    footer.append(
+        ttxutils.decode("€AUK 5 day€B Sport  €CWeather   €FMain Menu")
+    )
+
+    page = ttxpage.TeletextPage("Weather Reports", cfg["observations"])
+
+    for subpage in (1, 2, 3):
+        body = []
+        top = f"{subpage}/3"
+        body.append(f"{top:>39.39}")
+        time = timestamp.strftime("%H%M")
+        body.append(f"{ttxcolour.yellow()}CURRENT UK WEATHER: Report at {time}")
+        body.append("")
+        body.append(ttxutils.decode("            ␃temp   wind  pres"))
+        body.append(ttxutils.decode("               ␇C    mph    mB"))
+        base = (subpage - 1) * 10
+        for l in rows[base : base + 10]:
+            body.append(l)
+
+        page.header(cfg["observations"], subpage, status=0xC000)
+        line = 1
+        for l in header:
+            page.addline(line, ttxutils.decode(l))
+            line += 1
+        for l in body:
+            page.addline(line, l)
+            line += 1
+        line = 25 - len(footer)
+        for l in footer:
+            page.addline(line, l)
+            line += 1
+        page.addfasttext(
+            cfg["fiveday"], 0x300, cfg["index"], 0x100, 0x8FF, 0x199
+        )
+        subpage += 1
+    page.save()
+
+
 def makeweather():
     W = WeatherCache()
     if not W.valid():
@@ -411,6 +594,7 @@ def makeweather():
     weathermaps(W)
     regionheadline = weatherregion(W)
     ukheadline = weatheroutlook(W)
+    weatherobservations(W)
 
 
 def main():
