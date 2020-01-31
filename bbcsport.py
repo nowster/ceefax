@@ -655,12 +655,12 @@ def football_guide(pages):
         "€ACricket  €BFootball  €CTop Sport  €FSport",
     ]
     lines = [
-        "€B GUIDE TO FOOTBALL PAGES",
-        "€G LATEST NEWS `€FStories/reports€G303-315",
-        "€F                     Gossip column€G338",
+        ttxutils.decode("€B GUIDE TO FOOTBALL PAGES"),
+        ttxutils.decode("€G LATEST NEWS `€FStories/reports€G303-315"),
+        ttxutils.decode("€F                     Gossip column€G338"),
         "",
         "",
-        "€G FIXTURES/RESULTS"
+        ttxutils.decode("€G FIXTURES/RESULTS"),
     ]
 
     pgs = []
@@ -682,10 +682,10 @@ def football_guide(pages):
 
     lines += [
         "",
-        "€G TABLES",
-        "€F Premier league€G324€FLeague Two    €G327",
-        "€F Championship  €G325€FScottish prem.€G328",
-        "€F League One    €G326€FScottish champ€G329",
+        ttxutils.decode("€G TABLES"),
+        ttxutils.decode("€F Premier league€G324€FLeague Two    €G327"),
+        ttxutils.decode("€F Championship  €G325€FScottish prem.€G328"),
+        ttxutils.decode("€F League One    €G326€FScottish champ€G329"),
     ]
 
     ttxutils.generic_page("Football", pagenum, pages, header, footer,

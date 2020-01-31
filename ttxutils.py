@@ -96,8 +96,8 @@ def generic_page(category : str,
         page.addline(line, decode(l))
         line += 1
 
-    for ll in lines:
-        page.addline(line, decode(ll))
+    for l in lines:
+        page.addline(line, l)
         line += 1
 
     line = 25 - len(footer)
