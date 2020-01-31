@@ -2,7 +2,7 @@ import ttxcolour
 import ttxutils
 import ttxpage
 import weathermap
-from wx_ids import regions, city_ids, region_ids, observation_ids
+from wx_ids import regions, city_ids, region_ids, observation_ids, fiveday_ids
 import metoffer
 
 import dateutil.parser
@@ -585,6 +585,131 @@ def weatherobservations(W):
     page.save()
 
 
+def weatherfiveday(W):
+    cfg = _config["weather"]
+
+    maximum = -9999
+    minimum = 9999
+    today = None
+    entries = []
+    for city, num in fiveday_ids.items():
+        wx = W.loc_forecast(num, metoffer.DAILY).data
+        if today is None:
+            today = wx[0]["timestamp"][0]
+        entry = [city]
+        for i in range(5):
+            wx_type = short_weathers.get(wx[i * 2]["Weather Type"][0], "N/A")
+            max_temp = int(wx[i * 2]["Day Maximum Temperature"][0])
+            min_temp = int(wx[i * 2 + 1]["Night Minimum Temperature"][0])
+            date = wx[i * 2]["timestamp"][0]
+            entry.append(
+                f"{date.strftime('%a')}" f"{max_temp:>4}{min_temp:>4} {wx_type}"
+            )
+            if max_temp > maximum:
+                maximum = max_temp
+            if min_temp < minimum:
+                minimum = min_temp
+
+        entries.append(entry)
+
+    header = [
+        "␗j#3kj#3kj#3k␔␝␑␓h44|h<h<|(|$|h4|$|l    ",
+        "␗j $kj $kj 'k␔␝␑␓*uu?jwj7␡ ␡ ␡k5␡1␡k4   ",
+        '␗"###"###"###␔////,,.-,-.,/,/,-.,.,-.///',
+    ]
+
+    temps_c = []
+    temps_f = []
+    steps = (maximum - minimum) / 10
+    if steps < 1:
+        steps = 1
+        minimum = (minimum + maximum) // 2 - 5
+    for i in range(11):
+        temp_c = round(minimum + i * steps)
+        temp_f = round((temp_c * 1.8) + 32)
+        c = str(temp_c)
+        f = str(temp_f)
+        l = max(len(c), len(f))
+        temps_c.append(f"{c:>{l}}")
+        temps_f.append(f"{f:>{l}}")
+
+    footer = []
+    back = (
+        ttxcolour.blue()
+        + ttxcolour.colour(ttxcolour.NEW_BACK)
+        + ttxcolour.yellow()
+    )
+    footer.append(f"{back}C= " + " ".join(temps_c))
+    footer.append(f"{back}F= " + " ".join(temps_f))
+    footer.append(
+        ttxutils.decode("€AUK map  €B Sport  €CWeather   €FMain Menu")
+    )
+
+    page = ttxpage.TeletextPage("Weather Five Day", cfg["fiveday"])
+
+    numpages = (len(entries) + 3) // 4
+    for sub in range(numpages):
+        body = []
+        top = f"{sub+1}/{numpages}"
+        body.append(f"{top:>39.39}")
+        body.append(
+            ttxcolour.yellow()
+            + "UK FIVE DAY FORECAST FROM "
+            + today.strftime("%e %b").strip()
+        )
+        body.append(ttxcolour.green() + "max for 0600-1800   min for 1800-0600")
+        body.append(
+            ttxcolour.yellow()
+            + "    max min"
+            + ttxcolour.white()
+            + "C      "
+            + ttxcolour.yellow()
+            + "    max min"
+            + ttxcolour.white()
+            + "C"
+        )
+        for i in range(2):
+            count = 0
+            c1 = []
+            c2 = []
+            offset = (sub * 4) + i
+            if offset < len(entries):
+                c1 = entries[offset]
+            offset = (sub * 4) + i + 2
+            if offset < len(entries):
+                c2 = entries[offset]
+            while len(c1) and len(c2):
+                row = ""
+                if count % 2:
+                    row += ttxcolour.cyan()
+                else:
+                    row += ttxcolour.white()
+                if len(c1):
+                    row += f"{c1[0]:<19.19} "
+                    c1 = c1[1:]
+                if len(c2):
+                    row += c2[0]
+                    c2 = c2[1:]
+                body.append(row)
+                count += 1
+            body.append("")
+
+        page.header(cfg["fiveday"], sub + 1, status=0xC000)
+        line = 1
+        for l in header:
+            page.addline(line, ttxutils.decode(l))
+            line += 1
+        for l in body:
+            page.addline(line, l)
+            line += 1
+        line = 25 - len(footer)
+        for l in footer:
+            page.addline(line, l)
+            line += 1
+        page.addfasttext(cfg["maps"], 0x300, cfg["index"], 0x100, 0x8FF, 0x199)
+    page.save()
+
+
 def makeweather():
     W = WeatherCache()
     if not W.valid():
@@ -595,6 +720,7 @@ def makeweather():
     regionheadline = weatherregion(W)
     ukheadline = weatheroutlook(W)
     weatherobservations(W)
+    weatherfiveday(W)
 
 
 def main():
