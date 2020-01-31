@@ -794,7 +794,7 @@ def makeweather():
     W = WeatherCache()
     if not W.valid():
         print("Missing 'met_office_api' in configuration. Skipping weather.")
-        return
+        return []
 
     weathermaps(W)
     regionheadline = weatherregion(W)
@@ -802,6 +802,13 @@ def makeweather():
     weatherobservations(W)
     weatherfiveday(W)
     weatherindex(regionheadline, ukheadline)
+
+    return [
+        [
+            dict(section="Weather", short_title=ukheadline),
+            _config["weather"]["maps"],
+        ]
+    ]
 
 
 def main():
