@@ -710,6 +710,86 @@ def weatherfiveday(W):
     page.save()
 
 
+def weatherindex(regionhead, ukhead):
+    cfg = _config["weather"]
+
+    page = ttxpage.TeletextPage("Weather Index", cfg["index"])
+    regionheads = textwrap.wrap(page.fixup(regionhead), 35)
+    regionhead = f"{regionheads[0]:<35.35}"
+    regionheads = regionheads[1:]
+
+    headline = "WEATHER NEWS:¬" + page.fixup(ukhead)
+    headlines = textwrap.wrap(headline, 39)
+    for i in range(len(headlines)):
+        l = headlines[i]
+        if i == 0:
+            l = ttxcolour.yellow() + l.replace("¬", ttxcolour.green())
+        elif i == len(headlines) - 1:
+            l = (
+                ttxcolour.green()
+                + f"{l:<35.35}"
+                + ttxcolour.yellow()
+                + f"{cfg['maps']:03x}"
+            )
+        else:
+            l = ttxcolour.green() + l
+        headlines[i] = l
+
+    header = [
+        "␗j#3kj#3kj#3k␔␝␑␓h44|h<h<|(|$|h4|$|l    ",
+        "␗j $kj $kj 'k␔␝␑␓*uu?jwj7␡ ␡ ␡k5␡1␡k4   ",
+        '␗"###"###"###␔////,,.-,-.,/,/,-.,.,-.///',
+    ]
+
+    middle = [
+        "␃UK␄````````````````````````````````````",
+        "␆Forecast maps  ␃401␆UK Cities 5 Day␃406",
+        "␆Regions        ␃402␆               ␃   ",
+        "␆National       ␃403␆               ␃   ",
+        "␆Current Weather␃404                    ",
+        "                                        ",
+    ]
+
+    attrib = "From the Met Office"
+    attrib = f"{attrib:^39}"[2:]
+    footer = headlines + [
+        "",
+        ttxcolour.blue()
+        + ttxcolour.colour(ttxcolour.NEW_BACK)
+        + f"{ttxcolour.yellow()}{attrib}",
+        ttxutils.decode("€AMaps  €BRegional  €COutlook  €FMain Menu"),
+    ]
+
+    page.header(cfg["index"])
+    line = 1
+    for l in header:
+        page.addline(line, ttxutils.decode(l))
+        line += 1
+    page.addline(
+        line,
+        ttxcolour.colour(ttxcolour.DOUBLE_HEIGHT)
+        + regionhead
+        + ttxcolour.yellow()
+        + f"{cfg['regional']:03x}",
+    )
+    line += 2
+    for l in regionheads:
+        page.addline(line, " " + l)
+        line += 1
+    line += 1
+    for l in middle:
+        page.addline(line, ttxutils.decode(l))
+        line += 1
+    line = 25 - len(footer)
+    for l in footer:
+        page.addline(line, l)
+        line += 1
+    page.addfasttext(
+        cfg["maps"], cfg["regional"], cfg["national"], 0x100, 0x8FF, 0x199
+    )
+    page.save()
+
+
 def makeweather():
     W = WeatherCache()
     if not W.valid():
@@ -721,6 +801,7 @@ def makeweather():
     ukheadline = weatheroutlook(W)
     weatherobservations(W)
     weatherfiveday(W)
+    weatherindex(regionheadline, ukheadline)
 
 
 def main():
