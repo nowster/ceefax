@@ -149,12 +149,67 @@ def print_obs():
     print()
 
 
+def print_fivedays(forecast_sites):
+
+    fivedays = [
+        ("Aberdeen", "Aberdeen"),
+        ("Aberystwyth", "Aberystwyth"),
+        ("Llangefni", "Anglesey"),
+        ("Ayr", "Ayr"),
+        ("Belfast", "Belfast"),
+        ("Birmingham", "Birmingham"),
+        ("Bristol", "Bristol"),
+        ("Cardiff", "Cardiff"),
+        ("Carlisle", "Carlisle"),
+        ("Douglas (Isle Of Man)", "Douglas, I of Man"),
+        ("Dover", "Dover"),
+        ("Edinburgh", "Edinburgh"),
+        ("Exeter", "Exeter"),
+        ("Glasgow", "Glasgow"),
+        ("Hull", "Hull"),
+        ("Inverness", "Inverness"),
+        ("Leeds", "Leeds"),
+        ("Lerwick", "Lerwick"),
+        ("Lincoln", "Lincoln"),
+        ("Liverpool", "Liverpool"),
+        ("London", "London"),
+        ("Londonderry (Derry)", "Londonderry"),
+        ("Manchester", "Manchester"),
+        ("Newcastle Upon Tyne", "Newcastle"),
+        ("Norwich", "Norwich"),
+        ("Nottingham", "Nottingham"),
+        ("Oban", "Oban"),
+        ("Penzance", "Penzance"),
+        ("Peterborough", "Peterborough"),
+        ("Plymouth", "Plymouth"),
+        ("St Helier", "St Helier"),
+        ("St Peter Port", "St Peter Port"),
+        ("Salisbury", "Salisbury"),
+        ("Scarborough", "Scarborough"),
+        ("Sheffield", "Sheffield"),
+        ("Shrewsbury", "Shrewsbury"),
+        ("Southampton", "Southampton"),
+        ("Stranraer", "Stranraer"),
+        ("Worcester", "Worcester"),
+        ("York", "York"),
+    ]
+
+    fiveday_ids = dict()
+    for real, screen in fivedays:
+        fiveday_ids[screen] = forecast_sites[real]
+
+    print("fiveday_ids = ", end="")
+    pprint.pprint(fiveday_ids)
+    print()
+
+
 def main():
     forecast_sites = ids_of(M.loc_forecast(metoffer.SITELIST, ""))
     print_cities(forecast_sites)
     print_region_locs(forecast_sites)
     print_regions()
     print_obs()
+    print_fivedays(forecast_sites)
 
 
 if __name__ == "__main__":
