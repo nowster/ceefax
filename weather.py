@@ -332,6 +332,76 @@ def weatherregion(W):
     return headline
 
 
+def weatheroutlook(W):
+    cfg = _config["weather"]
+
+    wx_text = W.text_forecast(metoffer.REGIONAL_FORECAST, regions["uk"])
+
+    headline = wx_text.data[0][1]
+
+    page = ttxpage.TeletextPage("Weather Page", cfg["national"])
+
+    pages = []
+    for i in range(3):
+        head = wx_text.data[i + 1][0].replace(":", "")
+        head = textwrap.wrap(page.fixup(head), 39)
+        body = wx_text.data[i + 1][1]
+        body = re.sub(r" M(ax|in)imum Temperature \d+C.*", r"", body)
+        body = textwrap.wrap(page.fixup(body), 39)
+        block = []
+        for h in head:
+            block.append(f" {h:<.39}")
+        for b in body:
+            block.append(f"{ttxcolour.cyan()}{b:<.39}")
+        if len(pages) and len(pages[-1]) + len(block) + 1 <= 15:
+            pages[-1].append('')
+            pages[-1].extend(block)
+        else:
+            pages.append(block)
+
+    header = [
+        "␗j#3kj#3kj#3k␔␝␑␓h44|h<h<|(|$|h4|$|l    ",
+        "␗j $kj $kj 'k␔␝␑␓*uu?jwj7␡ ␡ ␡k5␡1␡k4   ",
+        '␗"###"###"###␔////,,.-,-.,/,/,-.,.,-.///',
+    ]
+
+    title = "From the Met Office"
+    title = f"{title:^39}"[2:]
+    footer = [
+        ttxcolour.blue()
+        + ttxcolour.colour(ttxcolour.NEW_BACK)
+        + f"{ttxcolour.yellow()}{title}",
+        ttxutils.decode("€AUK cities €BSport  €CWeather  €FMain Menu"),
+    ]
+
+    for subpage in range(len(pages)):
+        rows = []
+        top = f"{subpage + 1}/{len(pages)}"
+        rows.append(f"{top:>39.39}")
+        rows.append(" UK WEATHER OUTLOOK")
+        rows.append("")
+        rows.extend(pages[subpage])
+
+        page.header(cfg["national"], subpage + 1, status=0xC000)
+        line = 1
+        for l in header:
+            page.addline(line, ttxutils.decode(l))
+            line += 1
+        for l in rows:
+            page.addline(line, l)
+            line += 1
+        line = 25 - len(footer)
+        for l in footer:
+            page.addline(line, l)
+            line += 1
+        page.addfasttext(
+            cfg["observations"], 0x300, cfg["index"], 0x100, 0x8FF, 0x199
+        )
+
+    page.save()
+    return headline
+
+
 def makeweather():
     W = WeatherCache()
     if not W.valid():
@@ -340,6 +410,7 @@ def makeweather():
 
     weathermaps(W)
     regionheadline = weatherregion(W)
+    ukheadline = weatheroutlook(W)
 
 
 def main():
