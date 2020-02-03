@@ -3,6 +3,7 @@
 import re
 
 import ttxpage
+import ttxutils
 import config
 _config=config.Config().config
 
@@ -27,6 +28,25 @@ class Newsreel(metaclass=_Singleton):
 
     def clear(self):
         self.pages.clear()
+        self.add_in_vision()
+
+    def add_in_vision(self):
+        d = ttxutils.decode
+        lines = [
+            (2, d("␄␝␇␍        YOU ARE WATCHING")),
+            (4, d("␄␝␇␍ITEMS OF NEWS AND INFORMATION FROM")),
+            (7, d("␄␝␓ ||||||,,l   ,<,l   ,<,l             ")),
+            (8,d("␄␝␓ ␡␡␡␡␡␡ ␡␡j#s55b␡j#s55bjj#7k␡␡␡␡␡␡   ")),
+            (9,d("␄␝␓ //////,,.j .5-,.j ~5-..j!4k␡␡␡␡␡␡   ")),
+            (10,d('␄␝␓         "###!  "###!  "##########   ')),
+            (11,d("␄␝␃␍    THE BBC'S TELETEXT SERVICE")),
+            (14,d("␄␝␇␍ The full service offers several")),
+            (16,d("␄␝␇␍hundred pages and is available to")),
+            (18,d("␄␝␇␍ anyone with a suitably-equipped")),
+            (20,d("␄␝␇␍         television set.")),
+            (22,d("␄␝"))
+        ]
+        self.pages.append(lines)
 
     def add(self, lines):
         page = []
