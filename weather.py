@@ -294,7 +294,7 @@ def weathermaps(W):
         )
         subpage += 1
 
-    page.save()
+    page.save(add_to_newsreel=True)
 
 
 def weatherregion(W):
