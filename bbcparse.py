@@ -184,50 +184,58 @@ class Feed(object):
             print(type(inst), inst)
             # print(text, file=open('/tmp/parsefail.html', 'w'))
             return None
-        metas = self.get_metas()
 
-        link = self.get_meta(metas, 'og:url')
+        try:
+            metas = self.get_metas()
 
-        if not self.good_url(link):
+            link = self.get_meta(metas, 'og:url')
+
+            if not self.good_url(link):
+                self.cache[url] = None
+                return None
+
+            title = self.parser.getElementsByClassName('story-body__h1')
+            if title is not None:
+                if len(title) <  1:
+                    title = None
+            if title is None:
+                title = self.parser.getElementsByTagName('title')
+            if title is not None:
+                title = title[0].textContent
+
+            description = self.get_meta(metas, 'og:description')
+            stitle = self.get_meta(metas, 'og:title')
+            section = self.get_meta(metas, 'article:section')
+
+            if 'in pictures:' in stitle.lower():
+                self.cache[url] = None
+                return None
+            if 'in pictures:' in title.lower():
+                self.cache[url] = None
+                return None
+
+            storytag = self.parser.getElementById('story-body')
+            if storytag is None:
+                storytag = self.parser.getElementsByClassName('story-body__inner')[0]
+
+            children = storytag.getAllChildNodes().getElementsByTagName('p')
+            for p in children:
+                if '-message' not in p.className:
+                    paragraphs.append(p.textContent.strip())
+
+
+            self.cache[url] = dict(title=title,
+                                   short_title=stitle,
+                                   section=section,
+                                   link=link,
+                                   description=description,
+                                   text=paragraphs,
+                                   published=pubdate
+            )
+            return self.cache[url]
+        except:
+            import traceback
+            print("Parsing exception:")
+            traceback.print_exc()
             self.cache[url] = None
             return None
-
-        title = self.parser.getElementsByClassName('story-body__h1')
-        if title is not None:
-            if len(title) <  1:
-                title = None
-        if title is None:
-            title = self.parser.getElementsByTagName('title')
-        if title is not None:
-            title = title[0].textContent
-
-        description = self.get_meta(metas, 'og:description')
-        stitle = self.get_meta(metas, 'og:title')
-        section = self.get_meta(metas, 'article:section')
-
-        if 'in pictures:' in stitle.lower():
-            self.cache[url] = None
-            return None
-        if 'in pictures:' in title.lower():
-            self.cache[url] = None
-            return None
-
-        storytag = self.parser.getElementById('story-body')
-        if storytag is None:
-            storytag = self.parser.getElementsByClassName('story-body__inner')[0]
-
-        children = storytag.getAllChildNodes().getElementsByTagName('p')
-        for p in children:
-            if '-message' not in p.className:
-                paragraphs.append(p.textContent.strip())
-
-
-        self.cache[url] = dict(title=title,
-                               short_title=stitle,
-                               section=section,
-                               link=link,
-                               description=description,
-                               text=paragraphs,
-                               published=pubdate
-        )
-        return self.cache[url]
