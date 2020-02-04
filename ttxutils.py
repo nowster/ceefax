@@ -23,8 +23,23 @@ def _make_viewdata(s):
         _trans_stored = s.maketrans(_translations)
     return s.translate(_trans_stored)
 
-def decode(text: str) -> str:
-    text = _make_viewdata(text)
+_trans_stored_low = None
+def _make_viewdata_low(s):
+    global _trans_stored_low
+    if not _trans_stored_low:
+        _translations = {}
+        for i in range(32):
+            _translations[chr(i)] = f"\x1B{chr(i+64)}"
+            _translations[chr(i + 0x2400)] = f"\x1B{chr(i+64)}"
+        _translations[chr(0x2421)] = "\x7f"
+        _trans_stored_low = s.maketrans(_translations)
+    return s.translate(_trans_stored_low)
+
+def decode(text: str, low: bool=False) -> str:
+    if low:
+        text = _make_viewdata_low(text)
+    else:
+        text = _make_viewdata(text)
     return text.replace("€", "\x1B").replace("¬", "\x7F")
 
 def hexdiff(a: str, b: str) -> int:

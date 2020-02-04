@@ -107,7 +107,7 @@ class WeatherMap(object):
         self.text_slots = dict()
 
     def map_lines(self):
-        return [ttxutils.decode(l) for l in self.map[2:]]
+        return [ttxutils.decode(l, low=True) for l in self.map[2:]]
 
     def plot_temp(self, city, temperature):
         temp = int(temperature)
