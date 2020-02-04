@@ -4,6 +4,7 @@ import ttxpage
 import weathermap
 from wx_ids import regions, city_ids, region_ids, observation_ids, fiveday_ids
 import metoffer
+import newsreel
 
 import dateutil.parser
 import dateutil.tz
@@ -795,6 +796,8 @@ def makeweather():
     if not W.valid():
         print("Missing 'met_office_api' in configuration. Skipping weather.")
         return []
+
+    newsreel.Newsreel().add_weather()
 
     weathermaps(W)
     regionheadline = weatherregion(W)
