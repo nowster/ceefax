@@ -461,7 +461,7 @@ def sport_footer(page, section):
         line += 1
     page.addfasttext(nextpage, index, 0x301, 0x300, 0x8FF, 0x199)
 
-def sport_page(number, contents):
+def sport_page(number, contents, add_to_newsreel=False):
     url = contents['link']
     page = ttxpage.TeletextPage("Sport Page {:03x} {}".format(number, url),
                                 number)
@@ -479,7 +479,7 @@ def sport_page(number, contents):
             line += page.wrapline(line, 22, page.fixup(para), colour) + 1
             colour = ttxcolour.cyan()
     sport_footer(page, contents['section'])
-    page.save()
+    page.save(add_to_newsreel=add_to_newsreel)
 
 def football_gossip_entries(url, cache):
     seen = []
@@ -708,9 +708,11 @@ def football():
             contents['section'] = 'Football'
             footentries.append(contents)
 
+    count = 2
     for contents in footentries:
-        sport_page(pagenum, contents)
+        sport_page(pagenum, contents, add_to_newsreel=(count>0))
         pagenum = ttxutils.nextpage(pagenum)
+        count -= 1
         if pagenum > pages['last']:
             break
 
