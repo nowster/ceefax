@@ -3,6 +3,7 @@
 import textwrap
 import html
 
+import newsreel
 import config
 _config=config.Config().config
 
@@ -82,10 +83,14 @@ class TeletextPage(object):
         text = html.unescape(text)
         return text.translate(trans)
 
-    def save(self, format_string="{}/{}{}.tti"):
+    def save(self, format_string="{}/{}{}.tti", add_to_newsreel=False):
         pagedir = _config['pagesdir']
         pageprefix = _config['pageprefix']
 
         with open(format_string.format(pagedir,pageprefix,self.page),
                   mode="w", newline="\r\n") as f:
             f.write("\n".join(self.lines))
+
+        if add_to_newsreel:
+            n = newsreel.Newsreel()
+            n.add(self.lines)
