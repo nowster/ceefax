@@ -10,7 +10,7 @@ import copy
 import config
 _config=config.Config().config
 
-def news_page(number, contents):
+def news_page(number, contents, add_to_newsreel=False):
     url = contents['link']
     page = ttxpage.TeletextPage("News Page {:03x} {}".format(number, url),
                                 number)
@@ -28,7 +28,7 @@ def news_page(number, contents):
             colour = ttxcolour.cyan()
 
     newsheaders.newsfooter(page, category)
-    page.save()
+    page.save(add_to_newsreel=add_to_newsreel)
 
 def news_headlines(entries, conf, region=None):
     pagenum = conf['headlines']
@@ -222,7 +222,7 @@ def makenews():
     page = news['first']
     if stories:
         for story in stories:
-            news_page(page, story)
+            news_page(page, story, add_to_newsreel=True)
             page = ttxutils.nextpage(page)
         news_index(stories, news)
         news_headlines(stories, news)

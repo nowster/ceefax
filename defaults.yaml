@@ -564,3 +564,7 @@ weather:
   national: 0x403
   observations: 0x404
   fiveday: 0x406
+
+newsreel:
+  page: 0x152
+  duration: 30

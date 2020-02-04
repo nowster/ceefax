@@ -7,6 +7,7 @@ import bbcnews
 import bbcsport
 import bbcents
 import weather
+import newsreel
 import fetch
 
 import os
@@ -94,8 +95,11 @@ def main():
     for d in [_config['pagesdir'], _config['cachedir']]:
         os.makedirs(d, mode=0o755, exist_ok=True)
 
+    reel = newsreel.Newsreel()
+
     while True:
         start = time.time()
+        reel.clear()
         headlines = []
         headlines.extend(bbcnews.makenews())
         headlines.extend(bbcsport.makesport())
@@ -105,6 +109,8 @@ def main():
         makefrontpage(headlines)
         if 'nms' in _config:
             nms_extras(headlines)
+
+        reel.save()
 
         end = time.time()
         if args.every:
