@@ -12,7 +12,19 @@ def nextpage(page : Union[int, str]) -> int:
         if (p & 0x0f) <= 9:
             return p
 
+_trans_stored = None
+def _make_viewdata(s):
+    global _trans_stored
+    if not _trans_stored:
+        _translations = {}
+        for i in range(32):
+            _translations[chr(i + 0x2400)] = f"\x1B{chr(i+64)}"
+        _translations[chr(0x2421)] = "\x7f"
+        _trans_stored = s.maketrans(_translations)
+    return s.translate(_trans_stored)
+
 def decode(text: str) -> str:
+    text = _make_viewdata(text)
     return text.replace("€", "\x1B").replace("¬", "\x7F")
 
 def hexdiff(a: str, b: str) -> int:

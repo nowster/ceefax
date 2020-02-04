@@ -13,3 +13,7 @@ cachedir: /ram/cache
 
 bbc_news_region: north_west_england
 
+# To get one of these you need to register at
+# https://www.metoffice.gov.uk/services/data/datapoint/api
+#met_office_api: 01234567-89ab-cdef-0123-456789abcdef
+

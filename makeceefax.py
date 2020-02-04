@@ -6,6 +6,7 @@ import ttxutils
 import bbcnews
 import bbcsport
 import bbcents
+import weather
 import fetch
 
 import os
@@ -99,6 +100,7 @@ def main():
         headlines.extend(bbcnews.makenews())
         headlines.extend(bbcsport.makesport())
         headlines.extend(bbcents.makeentertainment())
+        headlines.extend(weather.makeweather())
 
         makefrontpage(headlines)
         if 'nms' in _config:

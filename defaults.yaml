@@ -18,186 +18,267 @@ bbc_news_regions:
   northern_ireland:
     name: Northern Ireland
     short: N IRELAND
+    medium: N IRELAND
     feed: news/northern_ireland
+    weather: ni
   scotland:
     name: Scotland
     short: SCOTLAND
+    medium: SCOTLAND
     feed: news/scotland
+    weather: st
   wales:
     name: Wales
     short: WALES
+    medium: WALES
     feed: news/wales
+    weather: wl
   england:
     name: England
     short: ENGLAND
+    medium: ENGLAND
     feed: news/england
+    weather: uk
   north_west_wales:
     name: North West Wales
     short: NW WALES
+    medium: NW WALES
     feed: news/wales/north_west_wales
+    weather: wl
   north_east_wales:
     name: North East Wales
     short: NE WALES
+    medium: NE WALES
     feed: news/wales/north_east_wales
+    weather: wl
   mid_wales:
     name: Mid Wales
     short: MID WALES
+    medium: MID WALES
     feed: news/wales/mid_wales
+    weather: wl
   south_west_wales:
     name: South West Wales
     short: SW WALES
+    medium: SW WALES
     feed: news/wales/south_west_wales
+    weather: wl
   south_east_wales:
     name: South East Wales
     short: SE WALES
+    medium: SE WALES
     feed: news/wales/south_east_wales
+    weather: wl
   east_scotland:
     name: "Edinburgh, Fife & East"
     short: E SCOT
+    medium: E SCOTLAND
     feed: news/scotland/edinburgh_east_and_fife
+    weather: dg
   west_scotland:
     name: "Glasgow & West"
     short: W SCOT
+    medium: W SCOTLAND
     feed: news/scotland/glasgow_and_west
+    weather: st
   highlands_scotland:
     name: "Highlands & Islands"
     short: "H&I SCOT"
+    medium: "HIGHLND&ISLES"
     feed: news/scotland/highlands_and_islands
+    weather: he
   north_east_scotland:
     name: "NE, Orkney & Shetland"
     short: NE SCOT
+    medium: "NORTH & ISLES"
     feed: news/scotland/north_east_orkney_and_shetland
+    weather: os
   central_scotland:
     name: "Tayside & Central"
     short: C SCOT
+    medium: "TAYSIDE & C"
     feed: news/scotland/tayside_and_central
+    weather: ta
   south_scotland:
     name: "South Scotland"
     short: S SCOT
+    medium: S SCOTLAND
     feed: news/scotland/south_scotland
+    weather: dg
   north_west_england:
     name: "North West England"
     short: NW ENGL
+    medium: NORTH WEST
     feed:
       - news/england/manchester
       - news/england/merseyside
       - news/england/lancashire
       - news/england/cumbria
+    weather: nw
   cumbria:
     name: Cumbria
     short: CUMBRIA
+    medium: CUMBRIA
     feed: news/england/cumbria
+    weather: nw
   lancashire:
     name: Lancashire
     short: LANCS
+    medium: LANCASHIRE
     feed: news/england/lancashire
+    weather: nw
   liverpool:
     name: Liverpool
     short: LIVERPOOL
+    medium: LIVERPOOL
     feed: news/england/merseyside
+    weather: nw
   manchester:
     name: Manchester
     short: MANCHESTR
+    medium: MANCHESTER
     feed: news/england/manchester
+    weather: nw
   north_east_england:
     name: North East England
     short: NE ENGL
+    medium: NORTH EAST
     feed:
       - news/england/tees
       - news/england/tyne_and_wear
+    weather: ne
   tees:
     name: Tees
     short: TEES
+    medium: TEES
     feed: news/england/tees
+    weather: ne
   tyne_wear:
     name: "Tyne & Wear"
     short: "TYNE&WEAR"
+    medium: "TYNE & WEAR"
     feed: news/england/tyne_and_wear
+    weather: ne
   yorks_and_lincs:
     name: "Yorks & Lincs"
     short: "YKS&LNCS"
+    medium: "YORKS & LINCS"
     feed:
       - news/england/humberside
       - news/england/leeds_and_west_yorkshire
       - news/england/lincolnshire
       - news/england/south_yorkshire
       - news/england/york_and_north_yorkshire
+    weather: yh
   humberside:
     name: "Humberside"
     short: HUMBER
+    medium: "HUMBERSIDE"
     feed: news/england/humberside
+    weather: yh
   west_yorks:
     name: "Leeds & West Yorkshire"
     short: W YORKS
+    medium: "WEST YORKS"
     feed: news/england/leeds_and_west_yorkshire
+    weather: yh
   lincolnshire:
     name: Lincolnshire
     short: LINCS
+    medium: LINCOLNSHIRE
     feed: news/england/lincolnshire
+    weather: em
   south_yorks:
     name: "Sheffield & South Yorkshire"
     short: S YORKS
+    medium: SOUTH YORKS
     feed: news/england/south_yorkshire
+    weather: yh
   north_yorks:
     name: "York & North Yorkshire"
     short: N YORKS
+    medium: NORTH YORKS
     feed: news/england/york_and_north_yorkshire
+    weather: yh
   west_midlands:
     name: "West Midlands"
     short: W MIDS
+    medium: W MIDLANDS
     feed:
       - news/england/birmingham_and_black_country
       - news/england/coventry_and_warwickshire
       - news/england/hereford_and_worcester
       - news/england/shropshire
       - news/england/stoke_and_staffordshire
+    weather: wm
   birmingham:
     name: "Birmingham & Black Country"
     short: "BIRM'HAM"
+    medium: BIRMINGHAM
     feed: news/england/birmingham_and_black_country
+    weather: wm
   coventry:
     name: "Coventry & Warwickshire"
     short: WARKS
+    medium: WARWICKSHIRE
     feed: news/england/coventry_and_warwickshire
+    weather: em
   hereford_and_worcs:
     name: "Hereford & Worcester"
     short: "HFD&WRCS"
+    medium: "HFORD & WORCS"
     feed: news/england/hereford_and_worcester
+    weather: wm
   shropshire:
     name: Shropshire
     short: SALOP
+    medium: SHROPSHIRE
     feed: news/england/shropshire
+    weather: wm
   staffordshire:
     name: "Stoke & Staffordshire"
     short: STAFFS
+    medium: STAFFORDSHIRE
     feed: news/england/stoke_and_staffordshire
+    weather: wm    
   east_midlands:
     name: East Midlands
     short: E MIDS
+    medium: E MIDLANDS
     feed:
       - news/england/derbyshire
       - news/england/leicester
       - news/england/northamptonshire
       - news/england/nottingham
+    weather: em
   derbyshire:
     name: Derbyshire
     short: DERBYS
+    medium: DERBYSHIRE
     feed: news/england/derbyshire
+    weather: em
   leicester:
     name: Leicestershire
     short: LEICS
+    medium: LEICESTERSHRE
     feed: news/england/leicester
+    weather: em
   northants:
     name: Northamptonshire
     short: NORTHANTS
+    medium: NORTHANTS
     feed: news/england/northamptonshire
+    weather: em
   nottingham:
     name: Nottingham
     short: NOTTS
+    medium: NOTTINGHAM
     feed: news/england/nottingham
+    weather: em
   west_england:
     name: "West & South West"
     short: "W&SW ENG"
+    medium: "WEST & S WEST"
     feed:
       - news/england/bristol
       - news/england/cornwall
@@ -205,124 +286,177 @@ bbc_news_regions:
       - news/england/gloucestershire
       - news/england/somerset
       - news/england/wiltshire
+    weather: sw
   bristol:
     name: Bristol
     short: BRISTOL
+    medium: BRISTOL
     feed: news/england/bristol
+    weather: sw
   cornwall:
     name: Cornwall
     short: CORNWALL
+    medium: CORNWALL
     feed: news/england/cornwall
+    weather: sw
   devon:
     name: Devon
     short: DEVON
+    medium: DEVON
     feed: news/england/devon
+    weather: sw
   gloucstershire:
-    name: Gloucstershire
+    name: Gloucestershire
     short: GLOS
+    medium: GLOUCESTERSH
     feed: news/england/gloucestershire
+    weather: sw
   somerset:
     name: Somerset
     short: SOMERSET
+    medium: SOMERSET
     feed: news/england/somerset
+    weather: sw
   wiltshire:
     name: Wiltshire
     short: WILTS
+    medium: WILTSHIRE
     feed: news/england/wiltshire
+    weather: sw
   east_england:
     name: East England
     short: EAST
+    medium: E ENGLAND
     feed:
       - news/england/beds_bucks_and_herts
       - news/england/cambridgeshire
       - news/england/essex
       - news/england/norfolk
       - news/england/suffolk
+    weather: ee
   beds_herts_bucks:
     name: "Beds, Herts & Bucks"
     short: "H COUNTY"
+    medium: HOME COUNTIES
     feed: news/england/beds_bucks_and_herts
+    weather: se
   cambridgeshire:
     name: Cambridgeshire
     short: CAMBS
+    medium: CAMBRIDGE
     feed: news/england/cambridgeshire
+    weather: ee
   essex:
     name: Essex
     short: ESSEX
+    medium: ESSEX
     feed: news/england/essex
+    weather: ee
   norfolk:
     name: Norfolk
     short: NORFOLK
+    medium: NORFOLK
     feed: news/england/norfolk
+    weather: ee
   suffolk:
     name: Suffolk
     short: SUFFOLK
+    medium: SUFFOLK
     feed: news/england/suffolk
+    weather: ee
   south_england:
     name: South England
     short: SOUTH
+    medium: S ENGLAND
     feed:
       - news/england/berkshire
       - news/england/hampshire
       - news/england/oxford
+    weather: wm
   berkshire:
     name: Berkshire
     short: BERKS
+    medium: BERKSHIRE
     feed: news/england/berkshire
+    weather: se
   dorset:
     name: Dorset
     short: DORSET
+    medium: DORSET
     feed: news/england/dorset
+    weather: sw
   hampshire:
     name: "Hampshire & Isle of Wight"
     short: "HAMPS&IOW"
+    medium: SOUTH COAST
     feed: news/england/hampshire
+    weather: sw
   oxford:
     name: Oxford
     short: OXFORD
+    medium: OXFORD
     feed: news/england/oxford
+    weather: wm
   south_east_england:
     name: "London & South East"
     short: SE ENG
+    medium: "LONDON & SE"
     feed:
       - news/england/kent
       - news/england/london
       - news/england/surrey
       - news/england/sussex
+    weather: se
   kent:
     name: Kent
     short: KENT
+    medium: KENT
     feed: news/england/kent
+    weather: se
   london:
     name: London
     short: LONDON
+    medium: LONDON
     feed: news/england/london
+    weather: se
   surrey:
     name: Surrey
     short: SURREY
+    medium: SURREY
     feed: news/england/surrey
+    weather: se
   sussex:
     name: Sussex
     short: SUSSEX
+    medium: SUSSEX
     feed: news/england/sussex
+    weather: se
   isle_of_man:
     name: Isle of Man
     short: I O M
+    medium: "ISLE OF MAN"
     feed: news/world/europe/isle_of_man
+    weather: nw
   channel_islands:
     name: Channel Islands
     short: CHAN IS
+    medium: "CHANNEL IS."
     feed:
       - news/world/europe/guernsey
       - news/world/europe/jersey
+    weather: sw
   guernsey:
     name: Guernsey
     short: GUERNSEY
+    medium: GUERNSEY
     feed: news/world/europe/guernsey
+    weather: sw
   jersey:
     name: Jersey
     short: JERSEY
+    medium: JERSEY
     feed: news/world/europe/jersey
+    weather: sw
 
 pages:
   news:
@@ -422,3 +556,11 @@ cricket_fixtures:
 cricket_scorecards:
   first: 0x351
   last: 0x356
+
+weather:
+  index: 0x400
+  maps: 0x401
+  regional: 0x402
+  national: 0x403
+  observations: 0x404
+  fiveday: 0x406
