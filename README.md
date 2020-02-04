@@ -5,8 +5,9 @@ service from the following websites:
 
 * BBC News
 * BBC Sport
+* UK Met Office
 
-It can be configured using the YAML file `teletext.yaml`.
+It can be configured using the YAML file `defaults.yaml`.
 
 The output is in the "Viewdata escaped" version of the [TTI file
 format](https://zxnet.co.uk/teletext/documents/ttiformat.pdf).
