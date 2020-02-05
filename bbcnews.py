@@ -185,7 +185,9 @@ def news_scitech(entries, conf):
         colour = ' '
         for para in contents['text']:
             if line <= 21:
-                line += page.wrapline(line, 22, page.fixup(para), colour) + 1
+                added = page.wrapline(line, 22, page.fixup(para), colour)
+                if added:
+                    line += added + 1
                 colour = ttxcolour.cyan()
         index = f"{subpage}/{length} "
         footers = [
