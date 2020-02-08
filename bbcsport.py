@@ -823,10 +823,18 @@ def cricket_scorecard_table(url, cache):
                             as_list=True, ignore='gs-u-vh')
     away_scores = _get_span(away_fix, 'sp-c-fixture__cricket-score',
                             as_list=True, ignore='gs-u-vh')
-    home_scores = [ l.replace('  ',' ').replace(' - ','-').strip()
-                    for l in home_scores ]
-    away_scores = [ l.replace('  ',' ').replace(' - ','-').strip()
-                    for l in away_scores ]
+
+    if home_scores:
+        home_scores = [ l.replace('  ',' ').replace(' - ','-').strip()
+                        for l in home_scores ]
+    else:
+        home_scores = []
+
+    if away_scores:
+        away_scores = [ l.replace('  ',' ').replace(' - ','-').strip()
+                        for l in away_scores ]
+    else:
+        away_scores = []
 
     status = _get_span(article, 'sp-c-fixture__win-message')
 
