@@ -457,7 +457,7 @@ def weatheroutlook(W):
             cfg["observations"], 0x300, cfg["index"], 0x100, 0x8FF, 0x199
         )
 
-    page.save()
+    page.save(add_to_newsreel=True)
     return headline
 
 
