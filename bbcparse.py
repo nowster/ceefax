@@ -181,7 +181,7 @@ class Feed(object):
             text = _remove_scripts(r.content.decode("utf-8"))
             self.parser.parseStr(text)
         except Exception as inst:
-            print(type(inst), inst)
+            print(type(inst), inst, flush=True)
             # print(text, file=open('/tmp/parsefail.html', 'w'))
             return None
 
@@ -237,5 +237,6 @@ class Feed(object):
             import traceback
             print("Parsing exception:")
             traceback.print_exc()
+            print(f"in {url}", flush=True)
             self.cache[url] = None
             return None
