@@ -329,14 +329,19 @@ def fixtures_table(url, cache):
                                   'abbr',1)
             home_goals = _get_span(nodes, 'sp-c-fixture__number--home')
             away_goals = _get_span(nodes, 'sp-c-fixture__number--away')
+            kickoff = _get_span(nodes, 'sp-c-fixture__block--time')
             status = _get_span(nodes, 'sp-c-fixture__aside')
             if not status:
                 status = _get_span(nodes, 'sp-c-fixture__status')
             if status:
+                if "abandoned" in status:
+                    home_goals = "A"
+                    away_goals = "A"
+                    kickoff = None
                 status = status.replace("Match postponed -","")
+                status = status.replace("Match abandoned -","")
                 status = status.replace(" mins", "min")
                 status = status.replace(' ','')
-            kickoff = _get_span(nodes, 'sp-c-fixture__number--time')
             block.append(dict(
                 home_team=home_team,
                 away_team=away_team,
