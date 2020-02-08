@@ -114,6 +114,15 @@ class Feed(object):
         return True
 
 
+    @staticmethod
+    def good_title(title):
+        if title is None:
+            return False
+        if title.startswith("Quiz:"):
+            return False
+        return True
+
+
     def get_entries(self, sport=False, max=99):
         if not self.rss_entries:
             return None
@@ -133,6 +142,8 @@ class Feed(object):
             update = _mkdatetime(e['published_parsed'])
             # Filter out stuff that doesn't work as teletext
             if not self.good_url(link):
+                continue
+            if not self.good_title(e['title']):
                 continue
             if '/sport/' in link and not sport:
                 continue
