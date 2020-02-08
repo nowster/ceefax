@@ -108,7 +108,7 @@ class Feed(object):
             return False
         if '/news/stories' in link:
             return False
-        if '/news/newsround' in link:
+        if '/newsround' in link:
             return False
         return True
 
