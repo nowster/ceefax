@@ -95,7 +95,8 @@ class Feed(object):
             with open(f"{_cachedir}/{self.cachename}.cache", 'wb') as f:
                 pickle.dump(self.cache, f)
 
-    def good_url(self, link):
+    @staticmethod
+    def good_url(link):
         if link is None:
             return False
         if '/av/' in link:
