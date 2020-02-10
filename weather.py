@@ -103,6 +103,25 @@ short_weathers = {
     30: "thunder",
 }
 
+reduction_mapping = {
+    2: 7,
+    3: 7,
+    9: 12,
+    10: 12,
+    13: 15,
+    14: 15,
+    16: 18,
+    17: 18,
+    19: 21,
+    20: 21,
+    22: 24,
+    23: 24,
+    25: 27,
+    26: 27,
+    28: 30,
+    29: 30,
+}
+
 maporder = {
     "highlands": 0,
     "grampian": 1,
@@ -223,6 +242,7 @@ def weathermaps(W):
         advanced = False
         page.header(pagenum, subpage, status=0xC000)
         region_wx = dict()
+        region_wx_reduced = dict()
         for reg_name, reg_id in region_ids.items():
             w = W.loc_forecast(reg_id, metoffer.DAILY)
             now = w.data[index + advance]
@@ -233,16 +253,30 @@ def weathermaps(W):
                 advance += 1
                 now = w.data[index + advance]
             wx_type = now["Weather Type"][0]
-            wx_type = weathers.get(wx_type, "N/A")
-            if wx_type in region_wx:
-                region_wx[wx_type].append(reg_name)
+            wx_type_full = weathers.get(wx_type, "N/A")
+            if wx_type_full in region_wx:
+                region_wx[wx_type_full].append(reg_name)
             else:
-                region_wx[wx_type] = [reg_name]
+                region_wx[wx_type_full] = [reg_name]
+            if wx_type in reduction_mapping:
+                wx_type = reduction_mapping[wx_type]
+            wx_type_reduced = weathers.get(wx_type, "N/A")
+            if wx_type_reduced in region_wx_reduced:
+                region_wx_reduced[wx_type_reduced].append(reg_name)
+            else:
+                region_wx_reduced[wx_type_reduced] = [reg_name]
+
+        if len(region_wx.keys()) > len(colours_a):
+            # Reduce colours in weather map
+            region_wx = region_wx_reduced
 
         map = weathermap.WeatherMap()
         reg_mapping = dict()
         i = 0
         for wx, locs in region_wx.items():
+            if i >= len(colours_a):
+                print(f"Out of colours on weather map {subpage}", flush=True)
+                i = 0
             map.plot_text(firstmap(locs), colours_a[i], wx)
             for loc in locs:
                 reg_mapping[loc] = colours_m[i]
