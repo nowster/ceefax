@@ -497,7 +497,7 @@ def ftse_shares(ftse):
         page.addline(
             line,
             ttxcolour.yellow()
-            + f"{'FTSE-100 MID-PRICES UPDATE:':<34}"
+            + f"{'FTSE-100 MID-PRICES:':<34}"
             + ttxcolour.white()
             + f"{subpage}/{len(pages)}",
         )
