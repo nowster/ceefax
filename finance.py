@@ -16,6 +16,8 @@ _config = config.Config().config
 _exchanges = "https://www.sharecast.com/indices/index.html"
 _ftse = "https://www.sharecast.com/index/FTSE_100"
 _currencies = "https://www.sharecast.com/currencies/index.html"
+_ftse_base = "https://www.londonstockexchange.com"
+_ftse_url = "/exchange/prices-and-markets/stocks/indices/summary/summary-indices-constituents.html?index=UKX"
 
 
 _indices = [
@@ -36,6 +38,112 @@ _indices = [
         ("£1=$", "GBP/USD"),
     ],
 ]
+
+_codes = dict(
+    [
+        ("III", "3I Group"),
+        ("ABF", "Assoc. British Food"),
+        ("ADM", "Admiral Group"),
+        ("AAL", "Anglo American"),
+        ("ANTO", "Antofagasta"),
+        ("AHT", "Ashtead Group"),
+        ("AZN", "AstraZeneca"),
+        ("AUTO", "Auto Trader Grp."),
+        ("AVV", "Aveva Grp"),
+        ("AV.", "Aviva"),
+        ("BA.", "BAE Systems"),
+        ("BARC", "Barclays"),
+        ("BDEV", "Barratt Developments"),
+        ("BKG", "Berkeley Gp. Holdings"),
+        ("BHP", "BHP Group"),
+        ("BP.", "BP"),
+        ("BATS", "British Amer.Tobacco"),
+        ("BLND", "British Land Company"),
+        ("BT.A", "BT Group"),
+        ("BNZL", "Bunzl"),
+        ("BRBY", "Burberry Group"),
+        ("CCL", "Carnival"),
+        ("CNA", "Centrica"),
+        ("CCH", "Coca-Cola HBC AG"),
+        ("CPG", "Compass Group"),
+        ("CRH", "CRH"),
+        ("CRDA", "Croda International"),
+        ("DCC", "DCC"),
+        ("DGE", "Diageo"),
+        ("EZJ", "easyJet"),
+        ("EVR", "Evraz"),
+        ("EXPN", "Experian"),
+        ("FERG", "Ferguson"),
+        ("FLTR", "Flutter Entertainment"),
+        ("GSK", "GlaxoSmithKline"),
+        ("GLEN", "Glencore"),
+        ("HLMA", "Halma"),
+        ("HL.", "Hargreaves Lansdown"),
+        ("HIK", "Hikma Pharmaceuticals"),
+        ("HSBA", "HSBC Holdings"),
+        ("IMB", "Imperial Brands"),
+        ("INF", "Informa"),
+        ("IHG", "Intercontl. Hotels"),
+        ("ITRK", "Intertek Group"),
+        ("IAG", "Intl.Consolid.Airlines"),
+        ("ITV", "ITV"),
+        ("JD.", "JD Sports Fashion"),
+        ("JMAT", "Johnson Matthey"),
+        ("JET", "Just Eat"),
+        ("KGF", "Kingfisher"),
+        ("LAND", "Land Securities Group"),
+        ("LGEN", "Legal & General Group"),
+        ("LLOY", "Lloyds Banking Group"),
+        ("LSE", "London Stock Exchange"),
+        ("MNG", "M&G plc"),
+        ("MGGT", "Meggitt"),
+        ("MRO", "Melrose Industries"),
+        ("MNDI", "Mondi"),
+        ("MRW", "Morrison (Wm) S/mrkts"),
+        ("NG.", "National Grid"),
+        ("NXT", "Next"),
+        ("NMC", "NMC Health"),
+        ("OCDO", "Ocado Group"),
+        ("PSON", "Pearson"),
+        ("PSN", "Persimmon"),
+        ("PHNX", "Phoenix Group Holdings"),
+        ("POLY", "Polymetal Internatl."),
+        ("PRU", "Prudential"),
+        ("RDSA", "Royal Dutch Shell 'A'"),
+        ("RDSB", "Royal Dutch Shell 'B'"),
+        ("RB.", "Reckitt Benckiser Grp."),
+        ("REL", "RELX plc"),
+        ("RTO", "Rentokil Initial"),
+        ("RMV", "Rightmove"),
+        ("RIO", "Rio Tinto"),
+        ("RR.", "Rolls-Royce Holdings"),
+        ("RBS", "Royal Bank of Scotland"),
+        ("RSA", "RSA Insurance"),
+        ("SGE", "Sage Group"),
+        ("SBRY", "Sainsbury (J)"),
+        ("SDR", "Schroders"),
+        ("SMT", "Scot. Mortgage Inv.Tst"),
+        ("SGRO", "SEGRO"),
+        ("SVT", "Severn Trent"),
+        ("SN.", "Smith & Nephew"),
+        ("SMDS", "Smith (DS)"),
+        ("SMIN", "Smiths Group"),
+        ("SKG", "Smurfit Kappa Group"),
+        ("SPX", "Spirax-Sarco Engin."),
+        ("SSE", "SSE"),
+        ("STJ", "St. James's Place"),
+        ("STAN", "Standard Chartered"),
+        ("SLA", "Standard Life Aberdeen"),
+        ("TW.", "Taylor Wimpey"),
+        ("TSCO", "Tesco"),
+        ("TUI", "TUI AG"),
+        ("ULVR", "Unilever"),
+        ("UU.", "United Utilities Group"),
+        ("VOD", "Vodafone Group"),
+        ("WTB", "Whitbread"),
+        ("WPP", "WPP"),
+    ]
+)
 
 
 def stock_time(index, time):
@@ -341,7 +449,70 @@ def finance_index(indices, ftse, currencies):
     page.save()
 
 
-#    import pdb; pdb.set_trace()
+def ftse_shares(ftse):
+    header = [
+        "␗j#3kj#3kj#3k␑␝␗h,$4hh,4<4h,h,h 4<$<$44 ",
+        "␗j $kj $kj 'k␑␝␗bs57kj#57kjsjpj#5w1u07k ",
+        '␗"###"###"###␑//-,..--/..--,-,-/.,.,..-/',
+    ]
+
+    footer = [
+        ttxcolour.red()
+        + ttxcolour.colour(ttxcolour.NEW_BACK)
+        + ttxcolour.white()
+        + f"{'Data: www.londonstockexchange.com':^39}"[2:],
+        ttxutils.decode("€AFinance  €BSport  €CWeather  €FMain Menu"),
+    ]
+
+    pagenum = 0x220
+    page = ttxpage.TeletextPage("FTSE 100", pagenum, time=10)
+    subpage = 1
+
+    pages = []
+    rows = []
+    for key in sorted(ftse.keys(), key=str.lower):
+        share = ftse[key]
+        line = ttxcolour.cyan() + f"{share['name']:<22.22}"
+        line += ttxcolour.white() + f"{share['price']:>8.8}"
+        if "-" in share["delta"]:
+            line += ttxcolour.red()
+        else:
+            line += ttxcolour.cyan()
+        line += f"{share['delta']:>7.7}"
+        rows.append(line)
+        if len(rows) > 15:
+            pages.append(rows)
+            rows = []
+    if rows:
+        pages.append(rows)
+
+    for p in pages:
+        page.header(pagenum, subpage, status=0xC000)
+        line = 1
+        for l in header:
+            page.addline(line, ttxutils.decode(l))
+            line += 1
+        page.addline(
+            line,
+            ttxcolour.yellow()
+            + f"{'FTSE-100 MID-PRICES UPDATE:':<34}"
+            + ttxcolour.white()
+            + f"{subpage}/{len(pages)}",
+        )
+        line += 2
+        for l in p:
+            page.addline(line, l)
+            line += 1
+
+        line = 25 - len(footer)
+        for l in footer:
+            page.addline(line, l)
+            line += 1
+        page.addfasttext(0x200, 0x300, 0x400, 0x100, 0x8FF, 0x199)
+
+        subpage += 1
+
+    page.save()
 
 
 def makefinance():
@@ -352,8 +523,13 @@ def makefinance():
     indices = get_indices(F)
     currencies = get_currencies(F)
     ftse = get_ftse(F)
-
     finance_index(indices, ftse, currencies)
+
+    ftse100 = get_ftse100(F)
+    ftse_shares(ftse100)
+
+
+#    import pdb; pdb.set_trace()
 
 
 def main():
