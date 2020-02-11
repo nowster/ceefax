@@ -476,8 +476,10 @@ def ftse_shares(ftse):
         line += ttxcolour.white() + f"{share['price']:>8.8}"
         if "-" in share["delta"]:
             line += ttxcolour.red()
-        else:
+        elif "+" in share["delta"]:
             line += ttxcolour.cyan()
+        else:
+            line += ttxcolour.green()
         line += f"{share['delta']:>7.7}"
         rows.append(line)
         if len(rows) > 15:
