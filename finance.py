@@ -67,7 +67,7 @@ def stock_time(index, time):
 class FinanceCache(object):
     def __init__(self):
         self.cache = dict()
-        self.maxage = datetime.timedelta(minutes=15)
+        self.maxage = datetime.timedelta(minutes=5)
         self.fetch = fetch.Fetcher()
         cachedir = _config["cachedir"]
         try:
@@ -82,10 +82,14 @@ class FinanceCache(object):
             with open(f"{cachedir}/finance.cache", "wb") as f:
                 pickle.dump(self.cache, f)
 
-    def get(self, url):
+    def get(self, url, maxage=None):
+        if maxage is None:
+            maxage = self.maxage
+        elif type(maxage) is int:
+            maxage = datetime.timedelta(minutes=maxage)
         if url in self.cache:
             entry = self.cache[url]
-            if entry["stamp"] - datetime.datetime.now() < self.maxage:
+            if datetime.datetime.now() - entry["stamp"] < maxage:
                 return entry["value"]
         else:
             entry = None
