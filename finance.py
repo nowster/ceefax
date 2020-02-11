@@ -327,6 +327,8 @@ def get_ftse100(cache):
             currency = elements[2].textContent.strip()
             price = elements[3].textContent.strip()
             delta = elements[4].textContent.strip()
+            price = price.replace(",", "")
+            delta = delta.replace(",", "")
             percent = elements[5].textContent.strip()
             values[name] = dict(
                 name=name,
