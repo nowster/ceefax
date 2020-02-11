@@ -191,26 +191,79 @@ def get_ftse(cache):
     return values
 
 
+def get_ftse100(cache):
+    values = dict()
+    url = _ftse_base + _ftse_url
+    while url:
+        text = cache.get(url, maxage=60)
+        parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
+        parser.parseStr(text)
+
+        links = parser.find(tagname="a", title="Next")
+        if links:
+            url = _ftse_base + links[0].getAttribute("href")
+        else:
+            url = None
+
+        tables = parser.getElementsByTagName("table")
+        tbody = tables.getElementsByTagName("tbody")
+        for row in tbody.getElementsByTagName("tr"):
+            elements = row.getChildren().getElementsByTagName("td")
+            code = elements[0].textContent.strip()
+            if code in _codes:
+                name = _codes[code]
+            else:
+                name = elements[1].textContent.strip()
+                name = name.replace(";", "")  # bad encoding at LSEx
+                name = name.title()
+            currency = elements[2].textContent.strip()
+            price = elements[3].textContent.strip()
+            delta = elements[4].textContent.strip()
+            percent = elements[5].textContent.strip()
+            values[name] = dict(
+                name=name,
+                currency=currency,
+                price=price,
+                delta=delta,
+                percent=percent,
+            )
+
+    return values
+
+
 def finance_index(indices, ftse, currencies):
     header = [
         "␗j#3kj#3kj#3k␑␝␗  |,h4xl0xl0xl0|,h<     ",
         "␗j $kj $kj 'k␑␝␗  ␡#j5␡j5␡k5␡j5␡pjw     ",
         '␗"###"###"###␑////,/-.,-.,-.,-.,,-,/////',
+        ttxcolour.yellow() + " SHARES PAGES:",
+        "                        "
+        + ttxcolour.cyan()
+        + "FTSE100   "
+        + ttxcolour.white()
+        + "220",
+        "",
+        ttxcolour.cyan() + " Prices enjoy indicative status only.",
+        ttxcolour.cyan() + " No responsibility for accuracy or use",
+        ttxcolour.cyan() + " Share prices are updated every hour.",
+        ttxcolour.cyan() + " Data is delayed by up to an hour.",
     ]
     separator = ttxcolour.red() + " ````````````````````````````````````` "
 
     footer = [
         separator,
+        ttxcolour.red() + "   Market data from www.sharecast.com",
+        separator,
         ttxcolour.red()
         + ttxcolour.colour(ttxcolour.NEW_BACK)
         + ttxcolour.white()
-        + "  Front page 100        Shares 220",
+        + " Front page 100        Shares 220",
         ttxcolour.red()
-        + "Shares "
+        + "Shares   "
         + ttxcolour.green()
-        + "Sport "
+        + "Sport   "
         + ttxcolour.yellow()
-        + "Weather "
+        + "Weather  "
         + ttxcolour.cyan()
         + "Main Menu",
     ]
