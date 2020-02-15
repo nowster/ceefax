@@ -120,6 +120,8 @@ class Feed(object):
             return False
         if title.startswith("Quiz:"):
             return False
+        if title.endswith(": In pictures"):
+            return False
         return True
 
 
