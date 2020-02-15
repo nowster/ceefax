@@ -273,32 +273,6 @@ def get_currencies(cache):
     return values
 
 
-def get_ftse(cache):
-    text = cache.get(_ftse)
-    parser = AdvancedHTMLParser.IndexedAdvancedHTMLParser()
-    parser.parseStr(text)
-
-    values = dict()
-    table = parser.getElementsByTagName("table")
-    bodies = table.getElementsByTagName("tbody")
-
-    for row in bodies.getElementsByTagName("tr"):
-        name = (
-            row.getChildren().getElementsByTagName("th")[0].textContent.strip()
-        )
-        name = html.unescape(name)
-        elements = row.getChildren().getElementsByTagName("td")
-        price = elements[0].textContent.strip()
-        percent = elements[1].textContent.strip()
-        time = elements[5].textContent.strip()
-
-        price = price.replace(",", "")
-        time = dateutil.parser.parse(time)
-        values[name] = dict(price=price, percent=percent, time=time,)
-
-    return values
-
-
 def get_ftse100(cache):
     values = dict()
     url = _ftse_base + _ftse_url
@@ -384,9 +358,10 @@ def finance_index(indices, ftse, currencies):
     losers = 0
 
     for k, v in ftse.items():
-        if "-" in v["percent"]:
+        p = v["delta"]
+        if p.startswith("-"):
             losers += 1
-        elif v["percent"] != "0.00%":
+        elif p.startswith("+"):
             winners += 1
 
     middle = []
@@ -526,10 +501,8 @@ def makefinance():
 
     indices = get_indices(F)
     currencies = get_currencies(F)
-    ftse = get_ftse(F)
-    finance_index(indices, ftse, currencies)
-
     ftse100 = get_ftse100(F)
+    finance_index(indices, ftse100, currencies)
     ftse_shares(ftse100)
 
 
