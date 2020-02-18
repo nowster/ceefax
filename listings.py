@@ -30,7 +30,8 @@ class ListingsCache(object):
         self.cache = dict(
             today=None,
             tomorrow=None,
-            channels=None,
+            tv_channels=None,
+            radio_channels=None,
             postcode=None,
             datestamp=None,
             bbc_region=None,
@@ -74,9 +75,11 @@ class ListingsCache(object):
         postcode = L["postcode"]
         postcode = postcode.replace(" ", "")
         if self.cache["postcode"] == postcode:
-            channels = self.cache["channels"]
-            if channels is not None:
-                return channels
+            if (
+                self.cache["tv_channels"] is not None
+                and self.cache["radio_channels"] is not None
+            ):
+                return
 
         self.dummy_fetch()
 
@@ -121,7 +124,24 @@ class ListingsCache(object):
             return None
 
         chans = dict()
-        wanted_channels = [101, 102, 103, 104, 105, 111, 120]
+        wanted_channels = [
+            101,
+            102,
+            103,
+            104,
+            105,
+            111,
+            120,
+            700,
+            702,
+            703,
+            704,
+            705,
+            708,
+            721,
+            724,
+            731,
+        ]
         for c in channels_data:
             if c["lcn"] in wanted_channels:
                 if c["lcn"] == 120 and c["channelname"].startswith("S4C"):
@@ -132,17 +152,17 @@ class ListingsCache(object):
                         c["channelid"],
                     )
 
-        mappings = [
+        tv_mappings = [
             ["BBC One", "BBC 1"],
             ["BBC Two", "BBC 2"],
-            "ITV",
+            ["ITV", "STV", "UTV"],
             "Channel 4",
             "Channel 5",
             "S4C",
         ]
 
-        channels = []
-        for m in mappings:
+        tv_channels = []
+        for m in tv_mappings:
             hd = None
             sd = None
             for c in chans.keys():
@@ -160,15 +180,44 @@ class ListingsCache(object):
                         else:
                             sd = chans[c]
             if sd:
-                channels.append(sd)
+                tv_channels.append(sd)
             elif hd:
-                channels.append(hd)
+                tv_channels.append(hd)
             else:
-                channels.append(None)
+                tv_channels.append(None)
 
-        self.cache["channels"] = channels
+        radio_mappings = [
+            "BBC Radio 1",
+            "BBC Radio 2",
+            "BBC Radio 3",
+            "BBC Radio 4 FM",
+            "BBC R5L",
+            "BBC Radio 4 Ex",
+            "Classic FM",
+            "talkSport",
+            "Absolute Radio",
+        ]
+
+        radio_channels = []
+        for m in radio_mappings:
+            radio = None
+            for c in chans.keys():
+                if type(m) is list:
+                    for n in m:
+                        if c.upper().startswith(n.upper()):
+                            radio = chans[c]
+                else:
+                    if c.upper().startswith(m.upper()):
+                        radio = chans[c]
+
+            if radio:
+                radio_channels.append(radio)
+            else:
+                radio_channels.append(None)
+
+        self.cache["tv_channels"] = tv_channels
+        self.cache["radio_channels"] = radio_channels
         self.cache["postcode"] = postcode
-        return channels
 
     def get_listings(self):
         last = self.cache["datestamp"]
@@ -179,7 +228,7 @@ class ListingsCache(object):
         numbers = []
         maps = dict()
         i = 0
-        for c in self.cache["channels"]:
+        for c in self.cache["tv_channels"]:
             if c is not None:
                 name, chan_id = c
                 maps[chan_id] = i
@@ -251,10 +300,61 @@ class ListingsCache(object):
                         )
                     )
 
-            import pprint
+            if day == 0:
+                self.cache["today"] = events
+            else:
+                self.cache["tomorrow"] = events
 
-            pprint.pprint(events)
-            return
+        # Radio
+        numbers = []
+        maps = dict()
+        i = 0
+        for c in self.cache["radio_channels"]:
+            if c is not None:
+                name, chan_id = c
+                maps[chan_id] = i
+                numbers.append(chan_id)
+                i += 1
+
+        params = dict(channel=numbers)
+        url = f"{_freesat_guide}/api/0/"
+        r = self.fetch.get(url, params=params)
+        if r.status_code != 200:
+            print(f"day={r.status_code}")
+            return None
+        try:
+            data = json.loads(r.text)
+        except Exception as inst:
+            print(type(inst), inst, flush=True)
+            return None
+
+        events = dict([(i, []) for i in range(len(numbers))])
+        for channel in data:
+            for e in channel["event"]:
+                chan = maps[e["svcId"]]
+                dur = datetime.timedelta(seconds=e["duration"])
+                start = datetime.datetime.fromtimestamp(
+                    e["startTime"], datetime.timezone.utc
+                ).astimezone(tz.tzlocal())
+                desc = e["description"]
+                flags = []
+                name = e["name"]
+                if name.startswith("New: "):
+                    name = name[5:]
+
+                events[chan].append(
+                    dict(
+                        name=name,
+                        desc=desc,
+                        flags=flags,
+                        start=start,
+                        dur=dur,
+                    )
+                )
+
+        self.cache["radio"] = events
+
+        self.cache["datestamp"] = now
 
 
 def main():
