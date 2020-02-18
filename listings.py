@@ -356,6 +356,39 @@ class ListingsCache(object):
 
         self.cache["datestamp"] = now
 
+    @property
+    def radio_today(self):
+        return self.cache["radio"]
+
+    @property
+    def tv_today(self):
+        return self.cache["today"]
+
+    @property
+    def tv_tomorrow(self):
+        return self.cache["tomorrow"]
+
+    @property
+    def tv_channels(self):
+        r = []
+        for c in self.cache["tv_channels"]:
+            if c:
+                r.append(c[0].replace("HD", "").strip())
+        return r
+
+    @property
+    def radio_channels(self):
+        r = []
+        for c in self.cache["radio_channels"]:
+            if c:
+                r.append(c[0].replace("FM", "").strip())
+        return r
+
+    @property
+    def region(self):
+        self.get_channels()
+        return (self.cache["bbcregion"], self.cache["itvregion"])
+
 
 def main():
     config.Config().add("defaults.yaml")
