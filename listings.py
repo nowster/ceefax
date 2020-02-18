@@ -390,6 +390,57 @@ class ListingsCache(object):
         return (self.cache["bbcregion"], self.cache["itvregion"])
 
 
+def tv_header(name):
+    name = name.upper()
+    h = [
+        "␖h<,,,,,,||␆````````````````````````````",
+    ]
+    if "BBC ONE" in name or "BBC 1" in name:
+        h += [
+            "␖j5k7j5␡ ␡n␓␡{%␡{%␡+%(␡ ␇     ␇",
+            "␖j5j5\"m' ␡␡␓␡z5␡z5␡x4`␡0␇     ␇",
+        ]
+    elif "BBC TWO" in name or "BBC 2" in name:
+        h += [
+            "␖j5k7j5␡ ␡n␓␡{%␡{%␡+%bs␡␇     ␇",
+            "␖j5j5\"m' ␡␡␓␡z5␡z5␡x4jup␇     ␇",
+        ]
+    elif "ITV" in name:
+        h += [
+            '␖j5k7j5␡ ␡n␓k7"␡!␡j5    ␇     ␇',
+            "␖j5j5\"m' ␡␡␓zu ␡ +?!    ␇     ␇",
+        ]
+    elif "STV" in name:
+        h += [
+            '␖j5k7j5␡ ␡n␓~3"␡!␡j5    ␇     ␇',
+            "␖j5j5\"m' ␡␡␓r? ␡ +?!    ␇     ␇",
+        ]
+    elif "UTV" in name:
+        h += [
+            "␖j5k7j5␡ ␡n␓␡j5k7j5␡    ␇     ␇",
+            "␖j5j5\"m' ␡␡␓oz%j5\"o'    ␇     ␇",
+        ]
+    elif "CHANNEL 4" in name:
+        h += [
+            "␖j5k7j5␡ ␡n␓␡+%␡p0 ␡h4        ␇",
+            "␖j5j5\"m' ␡␡␓␡x4␡j5 #k7        ␇",
+        ]
+    elif "CHANNEL 5" in name:
+        h = [
+            "␖j5k7j5␡ ␡n␓␡+%␡p0 ␡s!        ␇",
+            "␖j5j5\"m' ␡␡␓␡x4␡j5 lz%        ␇",
+        ]
+    elif "S4C" in name:
+        h = [
+            "␖j5k7j5␡ ␡n␓ns!␡j5 ␡#         ␇",
+            "␖j5j5\"m' ␡␡␓pz%#k7!␡p         ␇",
+        ]
+
+    h.append("␖*-,,,,,,/.␆````````````````````````````")
+
+    return h
+
+
 def main():
     config.Config().add("defaults.yaml")
     config.Config().add("pm.yaml")
