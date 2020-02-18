@@ -448,13 +448,10 @@ def main():
 
     L = ListingsCache()
 
-    c = L.get_channels()
+    import pdb
 
-    L.get_listings()
-
-
-#    import pdb
-#    pdb.set_trace()
+    pdb.set_trace()
+    print(repr(L.radio_channels))
 
 
 if __name__ == "__main__":
