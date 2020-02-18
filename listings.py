@@ -21,6 +21,28 @@ _config = config.Config().config
 
 _freesat_guide = "https://www.freesat.co.uk/tv-guide"
 
+_tv_mappings = [
+    (["BBC One", "BBC 1"], 0x601),
+    (["BBC Two", "BBC 2"], 0x602),
+    (["ITV", "STV", "UTV"], 0x603),
+    ("Channel 4", 0x604),
+    ("Channel 5", 0x605),
+    ("S4C", 0x606),
+]
+
+_radio_mappings = [
+    ("BBC Radio 1", 0x641),
+    ("BBC Radio 2", 0x642),
+    ("BBC Radio 3", 0x643),
+    ("BBC Radio 4 FM", 0x644),
+    ("BBC R5L", 0x645),
+    ("BBC Radio 4 Ex", 0x646),
+    (["BBC WS", "BBC World Sv"], 0x648),
+    ("Classic FM", 0x647),
+    ("talkSport", 0x647),
+    ("Absolute Radio", 0x647),
+]
+
 
 class ListingsCache(object):
     def __init__(self):
@@ -138,6 +160,7 @@ class ListingsCache(object):
             704,
             705,
             708,
+            711,
             721,
             724,
             731,
@@ -150,19 +173,11 @@ class ListingsCache(object):
                     chans[c["channelname"]] = (
                         c["channelname"],
                         c["channelid"],
+                        c["lcn"],
                     )
 
-        tv_mappings = [
-            ["BBC One", "BBC 1"],
-            ["BBC Two", "BBC 2"],
-            ["ITV", "STV", "UTV"],
-            "Channel 4",
-            "Channel 5",
-            "S4C",
-        ]
-
         tv_channels = []
-        for m in tv_mappings:
+        for m, p in _tv_mappings:
             hd = None
             sd = None
             for c in chans.keys():
@@ -180,26 +195,14 @@ class ListingsCache(object):
                         else:
                             sd = chans[c]
             if sd:
-                tv_channels.append(sd)
+                tv_channels.append((p, sd))
             elif hd:
-                tv_channels.append(hd)
-            else:
-                tv_channels.append(None)
-
-        radio_mappings = [
-            "BBC Radio 1",
-            "BBC Radio 2",
-            "BBC Radio 3",
-            "BBC Radio 4 FM",
-            "BBC R5L",
-            "BBC Radio 4 Ex",
-            "Classic FM",
-            "talkSport",
-            "Absolute Radio",
-        ]
+                tv_channels.append((p, hd))
+            # else:
+            #    tv_channels.append(None)
 
         radio_channels = []
-        for m in radio_mappings:
+        for m, p in _radio_mappings:
             radio = None
             for c in chans.keys():
                 if type(m) is list:
@@ -211,9 +214,9 @@ class ListingsCache(object):
                         radio = chans[c]
 
             if radio:
-                radio_channels.append(radio)
-            else:
-                radio_channels.append(None)
+                radio_channels.append((p, radio))
+            # else:
+            #    radio_channels.append(None)
 
         self.cache["tv_channels"] = tv_channels
         self.cache["radio_channels"] = radio_channels
@@ -227,13 +230,15 @@ class ListingsCache(object):
 
         numbers = []
         maps = dict()
-        i = 0
-        for c in self.cache["tv_channels"]:
+        cmap = dict()
+        pages = dict()
+        for page, c in self.cache["tv_channels"]:
             if c is not None:
-                name, chan_id = c
-                maps[chan_id] = i
+                name, chan_id, lcn = c
+                maps[chan_id] = lcn
+                cmap[lcn] = page
+                pages[page] = 1
                 numbers.append(chan_id)
-                i += 1
 
         params = dict(channel=numbers)
         for day in [0, 1]:
@@ -248,7 +253,7 @@ class ListingsCache(object):
                 print(type(inst), inst, flush=True)
                 return None
 
-            events = dict([(i, []) for i in range(len(numbers))])
+            events = dict([(i, {}) for i in pages.keys()])
             for channel in data:
                 for e in channel["event"]:
                     chan = maps[e["svcId"]]
@@ -290,7 +295,12 @@ class ListingsCache(object):
                     if name.startswith("New: "):
                         name = name[5:]
 
-                    events[chan].append(
+                    page = cmap[chan]
+
+                    if chan not in events[page]:
+                        events[page][chan] = []
+
+                    events[page][chan].append(
                         dict(
                             name=name,
                             desc=desc,
@@ -308,13 +318,15 @@ class ListingsCache(object):
         # Radio
         numbers = []
         maps = dict()
-        i = 0
-        for c in self.cache["radio_channels"]:
+        cmap = dict()
+        pages = dict()
+        for page, c in self.cache["radio_channels"]:
             if c is not None:
-                name, chan_id = c
-                maps[chan_id] = i
+                name, chan_id, lcn = c
+                maps[chan_id] = lcn
+                cmap[lcn] = page
+                pages[page] = 1
                 numbers.append(chan_id)
-                i += 1
 
         params = dict(channel=numbers)
         url = f"{_freesat_guide}/api/0/"
@@ -328,7 +340,7 @@ class ListingsCache(object):
             print(type(inst), inst, flush=True)
             return None
 
-        events = dict([(i, []) for i in range(len(numbers))])
+        events = dict([(i, {}) for i in pages.keys()])
         for channel in data:
             for e in channel["event"]:
                 chan = maps[e["svcId"]]
@@ -342,7 +354,12 @@ class ListingsCache(object):
                 if name.startswith("New: "):
                     name = name[5:]
 
-                events[chan].append(
+                page = cmap[chan]
+
+                if chan not in events[page]:
+                    events[page][chan] = []
+
+                events[page][chan].append(
                     dict(
                         name=name,
                         desc=desc,
@@ -371,17 +388,31 @@ class ListingsCache(object):
     @property
     def tv_channels(self):
         r = []
-        for c in self.cache["tv_channels"]:
+        for page, c in self.cache["tv_channels"]:
             if c:
-                r.append(c[0].replace("HD", "").strip())
+                r.append((page, c[0].replace("HD", "").strip()))
         return r
+
+    def tv_lcn_to_name(self, lcn):
+        name = None
+        for page, c in self.cache["tv_channels"]:
+            if c[2] == lcn:
+                name = c[0].replace("HD", "").strip()
+        return name
+
+    def radio_lcn_to_name(self, lcn):
+        name = None
+        for page, c in self.cache["radio_channels"]:
+            if c[2] == lcn:
+                name = c[0].replace("HD", "").strip()
+        return name
 
     @property
     def radio_channels(self):
         r = []
-        for c in self.cache["radio_channels"]:
+        for page, c in self.cache["radio_channels"]:
             if c:
-                r.append(c[0].replace("FM", "").strip())
+                r.append((page, c[0].replace("FM", "").strip()))
         return r
 
     @property
