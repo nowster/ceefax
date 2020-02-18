@@ -60,3 +60,23 @@ class Fetcher(metaclass=_Singleton):
             # catastrophic error. bail.
             print(e, flush=True)
             sys.exit(1)
+
+    def post(self, *args, **kwargs):
+        try:
+            return self._cached_sess.post(*args, **kwargs)
+        except requests.exceptions.Timeout as errc:
+            print ("Timeout:",errc)
+            time.sleep(1)
+            return self.post(*args, **kwargs)
+        except requests.exceptions.ConnectionError as errc:
+            print ("Error Connecting:",errc)
+            time.sleep(1)
+            return self.head(*args, **kwargs)
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            print(e, flush=True)
+            sys.exit(1)
+
+    @property
+    def cookies(self):
+        return self._cached_sess.cookies
