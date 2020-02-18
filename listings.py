@@ -42,6 +42,8 @@ class ListingsCache(object):
                 self.cache = pickle.load(f)
         except:
             pass
+        self.get_channels()
+        self.get_listings()
 
     def __del__(self):
         cachedir = _config["cachedir"]
