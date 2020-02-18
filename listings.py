@@ -387,7 +387,7 @@ class ListingsCache(object):
     @property
     def region(self):
         self.get_channels()
-        return (self.cache["bbcregion"], self.cache["itvregion"])
+        return (self.cache["bbc_region"], self.cache["itv_region"])
 
 
 def tv_header(name):
