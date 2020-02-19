@@ -478,6 +478,60 @@ def tv_header(name, day, time, subpage=None):
     return h
 
 
+def tv_footer(name):
+    name = name.upper()
+
+    back = (
+        ttxcolour.char(ttxcolour.AC)
+        + ttxcolour.char(ttxcolour.NEW_BACK)
+        + ttxcolour.char(ttxcolour.AB)
+    )
+    f = [back + "S=Subtitles  AD=AudioDesc  SL=Signed"]
+
+    channels = [
+        ("BBC1", 0x601),
+        ("BBC2", 0x602),
+        ("ITV", 0x603),
+        ("Ch 4", 0x604),
+        ("Ch 5", 0x605),
+        ("S4C", 0x606),
+    ]
+
+    if "BBC ONE" in name or "BBC 1" in name:
+        chan = "BBC1"
+    elif "BBC TWO" in name or "BBC 2" in name:
+        chan = "BBC2"
+    elif "ITV" in name or "STV" in name or "UTV" in name:
+        chan = "ITV"
+    elif "CHANNEL 4" in name:
+        chan = "Ch 4"
+    elif "CHANNEL 5" in name:
+        chan = "Ch 5"
+    elif "S4C" in name:
+        chan = "S4C"
+
+    line = []
+    links = []
+    fasttexts = []
+    for n, p in channels:
+        if n != chan:
+            line.append(f'{n.replace(" ","")} {p:03x}')
+            links.append(n)
+            fasttexts.append(p)
+        if len(line) >= 4:
+            break
+    f.append(back + "  ".join(line))
+    colours = [ttxcolour.AR, ttxcolour.AG, ttxcolour.AY, ttxcolour.AC]
+
+    ft = ""
+    for c, n in zip(colours, links):
+        ft += ttxcolour.char(c) + f"{n:<9.9}"
+
+    f.append(ft)
+
+    return (f, fasttexts)
+
+
 def main():
     config.Config().add("defaults.yaml")
     config.Config().add("pm.yaml")
