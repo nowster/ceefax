@@ -457,12 +457,12 @@ def tv_header(name):
             "␖j5j5\"m' ␡␡␓␡x4␡j5 #k7        ␇",
         ]
     elif "CHANNEL 5" in name:
-        h = [
+        h += [
             "␖j5k7j5␡ ␡n␓␡+%␡p0 ␡s!        ␇",
             "␖j5j5\"m' ␡␡␓␡x4␡j5 lz%        ␇",
         ]
     elif "S4C" in name:
-        h = [
+        h += [
             "␖j5k7j5␡ ␡n␓ns!␡j5 ␡#         ␇",
             "␖j5j5\"m' ␡␡␓pz%#k7!␡p         ␇",
         ]
