@@ -716,11 +716,9 @@ def main():
     config.Config().load()
 
     L = ListingsCache()
-
     import pdb
 
-    pdb.set_trace()
-    print(repr(L.radio_channels))
+    tv_listings(L)
 
 
 if __name__ == "__main__":
