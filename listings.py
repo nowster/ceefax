@@ -569,6 +569,147 @@ def tv_footer(name):
     return (f, fasttexts)
 
 
+def tv_day(L, listings, offset=0):
+    max_rows = 16
+    for page_num, channels in listings.items():
+        page = ttxpage.TeletextPage("TV Page", page_num + offset)
+        pages = []
+        day = None
+        times = None
+        prevtimes = (None, None)
+        for lcn in sorted(channels.keys()):
+            p = []
+            programmes = channels[lcn]
+            min_hour = 4
+            for i in range(len(programmes)):
+                prog = programmes[i]
+                start = prog["start"]
+                end = start + prog["dur"]
+                if day is None and start.hour < min_hour:
+                    continue
+                flags = "/".join(prog["flags"])
+                name = prog["name"]
+                desc = prog["desc"]
+                if name.endswith("...") and desc.startswith("..."):
+                    index = desc.find(". ", 3)
+                    if index > 0:
+                        join = " "
+                        if name[-4] == "-":
+                            join = ""
+                        name = name[:-3] + join + desc[3:index]
+                        desc = desc[index + 2 :]
+
+                if len(name) > 80 and ": " in name:
+                    name, _, rest = name.partition(": ")
+                    desc = rest + ". " + desc
+
+                match = re.match(r"\d+/\d+\. ", desc)
+                if match:
+                    desc = desc.replace(match.group(0), "")
+                for sep in [".", "?", "!", ":"]:
+                    s = f"{sep} "
+                    if s in desc:
+                        index = desc.find(s, 3)
+                        desc = desc[:index]
+
+                time = start.strftime("%H%M")
+
+                if times is None:
+                    times = time
+                else:
+                    times = times[:4] + "-" + end.strftime("%H%M")
+                theday = start.strftime("%A").upper()
+                if day is None:
+                    day = theday
+                elif day != theday:
+                    day = day[:3] + "/" + theday[:3]
+
+                if i + 1 == len(programmes):
+                    time += "-" + end.strftime("%H%M")
+                lines = textwrap.wrap(
+                    page.fixup(name.upper()) + "¬\t" + flags,
+                    38 - len(time),
+                    expand_tabs=False,
+                    replace_whitespace=False,
+                )
+                colour = ttxcolour.white()
+                rows = []
+
+                for ll in lines:
+                    if "\t" in ll or "¬" in ll:
+                        ll = ll.replace("¬", "\t")
+                        ll = ll.replace("\t\t", "\t")
+                        ll = ll.replace("\t", ttxcolour.yellow())
+                        rows.append(f"{ttxcolour.yellow()}{time}{colour}{ll}")
+                        colour = ttxcolour.yellow()
+                    else:
+                        rows.append(f"{ttxcolour.yellow()}{time}{colour}{ll}")
+                    time = "    "
+
+                # desc gets used here (in cyan)
+                nu = name.upper()
+                if nu not in _no_desc:
+                    match = False
+                    for d in _no_desc_starts:
+                        if nu.startswith(d):
+                            match = True
+                            break
+                    if not match:
+                        if desc.endswith("."):
+                            desc = desc[:-1]
+                        lines = textwrap.wrap(page.fixup(desc), 38 - len(time))
+                        for ll in lines:
+                            rows.append(f" {time}{ttxcolour.cyan()}{ll}")
+
+                if (len(p) + len(rows)) <= max_rows:
+                    p.extend(rows)
+                    prevtimes = (day, times)
+                else:
+                    pages.append((lcn, *prevtimes, p))
+                    prevtimes = (day, times)
+                    day = theday
+                    times = start.strftime("%H%M")
+                    p = []
+                    p.extend(rows)
+            if len(p):
+                pages.append((lcn, *prevtimes, p))
+
+        subpage = 0
+        for lcn, day, times, p in pages:
+            if len(pages) > 1:
+                subpage += 1
+                page.header(page_num + offset, subpage, status=0xC000)
+            else:
+                page.header(page_num + offset, subpage, status=0x8000)
+            index = None
+            if len(pages) > 1:
+                index = f"{subpage}/{len(pages)}"
+            chan_name = L.tv_lcn_to_name(lcn)
+            line = 1
+            for r in tv_header(chan_name, day, times, index):
+                page.addline(line, ttxutils.decode(r))
+                line += 1
+
+            for r in p:
+                if len(r):
+                    page.addline(line, r)
+                line += 1
+
+            foot, fast = tv_footer(chan_name)
+            line = 25 - len(foot)
+            for l in foot:
+                page.addline(line, ttxutils.decode(l))
+                line += 1
+            page.addfasttext(*fast, 0x8FF, 0x100)
+
+        page.save()
+
+
+def tv_listings(L):
+    tv_day(L, L.tv_today)
+    tv_day(L, L.tv_tomorrow, 0x030)
+
+
 def main():
     config.Config().add("defaults.yaml")
     config.Config().add("pm.yaml")
