@@ -30,6 +30,8 @@ class TeletextPage(object):
             '”': '"', "—": '-', '[': '(', ']': ')', 'ü': 'u',
             "€": "E", '#': '_',
             "Æ": "AE", 'ø': 'o',
+            "â": "a", "ô": "o", "î": "i", "ê": "e",
+            "Â": "A", # usually mojibake
             "\u00a0" : " ", # non-break space
             "\u00ad" : "",  # soft hyphen
             "\u2010" : "-", # hyphen
@@ -81,6 +83,7 @@ class TeletextPage(object):
     def fixup(self, text):
         trans = text.maketrans(self.translations)
         text = html.unescape(text)
+        text = text.replace("Â£", "£") # mojibake fix
         return text.translate(trans)
 
     def save(self, format_string="{}/{}{}.tti", add_to_newsreel=False):
