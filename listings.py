@@ -404,7 +404,7 @@ class ListingsCache(object):
         name = None
         for page, c in self.cache["radio_channels"]:
             if c[2] == lcn:
-                name = c[0].replace("HD", "").strip()
+                name = c[0].replace("FM", "").strip()
         return name
 
     @property
