@@ -421,7 +421,7 @@ class ListingsCache(object):
         return (self.cache["bbc_region"], self.cache["itv_region"])
 
 
-def tv_header(name):
+def tv_header(name, day, time, subpage=None):
     name = name.upper()
     h = [
         "␖h<,,,,,,||␆````````````````````````````",
@@ -468,6 +468,12 @@ def tv_header(name):
         ]
 
     h.append("␖*-,,,,,,/.␆````````````````````````````")
+
+    h[1] += day
+    h[2] += time
+    if subpage:
+        subpage = ttxcolour.char(ttxcolour.AW) + f" {subpage} "
+        h[3] = h[3][: -len(subpage)] + subpage
 
     return h
 
