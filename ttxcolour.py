@@ -55,7 +55,8 @@ MW = MOSAICWHITE
 
 def colour(value):
     return chr(ESC) + chr(value + 0x40)
-
+def char(value):
+    return chr(value + 0x2400)
 def red():
     return colour(ALPHARED)
 def green():
