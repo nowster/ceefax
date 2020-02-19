@@ -43,6 +43,43 @@ _radio_mappings = [
     ("Absolute Radio", 0x647),
 ]
 
+_no_desc = [
+    "BREAKFAST",
+    "BBC NEWSROOM LIVE",
+    "ITV LUNCHTIME NEWS",
+    "ITV EVENING NEWS",
+    "ITV NIGHTSCREEN",
+    "STV NEWS",
+    "WEATHER",
+    "WEATHER FOR THE WEEK AHEAD",
+    "GOOD MORNING BRITAIN",
+    "BBC WALES TODAY",
+    "EAST MIDLANDS TODAY",
+    "MIDLANDS TODAY",
+    "BBC NEWSLINE",
+    "LOOK EAST",
+    "POINTS WEST",
+    "SOUTH EAST TODAY",
+    "NORTH WEST TODAY",
+    "NORTH WEST TONIGHT",
+    "UTV LIVE",
+    "SPOTLIGHT",
+    "REPORTING SCOTLAND",
+    "THIS IS BBC TWO",
+]
+
+_no_desc_starts = [
+    "BBC NEWS",
+    "BBC LONDON",
+    "ITV NEWS",
+    "CHANNEL 4 NEWS",
+    "5 NEWS",
+    "NEWYDDION",
+    "LOOK NORTH",
+    "SOUTH TODAY",
+    "..PROGRAMMES START AT",
+]
+
 
 class ListingsCache(object):
     def __init__(self):
