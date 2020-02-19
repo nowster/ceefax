@@ -116,14 +116,14 @@ def league(pagenum, url, cache):
             for l in footers:
                 page.addline(line, ttxutils.decode(l))
                 line += 1
-                page.addfasttext(nextpage, 0x302, 0x301, 0x300, 0x8ff, 0x320)
+            page.addfasttext(nextpage, 0x302, 0x301, 0x300, 0x8ff, 0x320)
 
     if not newpage:
         line = 24
         for l in footers:
             page.addline(line, ttxutils.decode(l))
             line += 1
-            page.addfasttext(nextpage, 0x302, 0x301, 0x300, 0x8ff, 0x320)
+        page.addfasttext(nextpage, 0x302, 0x301, 0x300, 0x8ff, 0x320)
     page.save()
 
 
