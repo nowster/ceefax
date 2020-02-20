@@ -101,7 +101,9 @@ class ListingsCache(object):
         try:
             with open(f"{cachedir}/listings.cache", "rb") as f:
                 self.cache = pickle.load(f)
-        except:
+        except OSError:
+            pass
+        except pickle.PickleError:
             pass
         self.get_channels()
         self.get_listings()
