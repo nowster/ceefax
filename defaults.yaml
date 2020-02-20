@@ -14,6 +14,12 @@ cachedir: /tmp/cache
 
 bbc_news_region: north_west_england
 
+# Where to get TV listings for.
+# Doesn't work for Channel Islands postcodes.
+listings:
+  postcode: W12 8QT
+
+
 bbc_news_regions:
   northern_ireland:
     name: Northern Ireland
