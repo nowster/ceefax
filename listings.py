@@ -78,6 +78,7 @@ _no_desc_starts = [
     "LOOK NORTH",
     "SOUTH TODAY",
     "..PROGRAMMES START AT",
+    "PARTY POLITICAL BROADCAST",
 ]
 
 
