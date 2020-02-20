@@ -1,7 +1,7 @@
 import ttxcolour
 import ttxutils
 import ttxpage
-import newsreel
+# import newsreel
 import fetch
 
 import datetime
@@ -719,7 +719,6 @@ def main():
     config.Config().load()
 
     L = ListingsCache()
-    import pdb
 
     tv_listings(L)
 
