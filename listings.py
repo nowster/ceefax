@@ -169,8 +169,8 @@ class ListingsCache(object):
                 itv = region
             self.cache["bbc_region"] = bbc
             self.cache["itv_region"] = itv
-        except Exception as inst:
-            print(type(inst), inst, flush=True)
+        except Exception as err:
+            print(type(err), err, flush=True)
             return None
 
         url = f"{_freesat_guide}/api/?post_code={postcode}"
