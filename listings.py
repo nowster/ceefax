@@ -577,10 +577,10 @@ def tv_day(L, listings, offset=0):
     for page_num, channels in listings.items():
         page = ttxpage.TeletextPage("TV Page", page_num + offset)
         pages = []
-        day = None
-        times = None
-        prevtimes = (None, None)
         for lcn in sorted(channels.keys()):
+            day = None
+            times = None
+            prevtimes = (None, None)
             p = []
             programmes = channels[lcn]
             min_hour = 4
