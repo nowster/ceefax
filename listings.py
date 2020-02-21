@@ -81,6 +81,22 @@ _no_desc_starts = [
     "PARTY POLITICAL BROADCAST",
 ]
 
+_radio_no_desc = [
+    "Today",
+    "Tweet of the Day",
+    "Shipping Forecast",
+    "News Briefing",
+    "Prayer for the Day",
+    "Weather Forecast",
+    "The World at One",
+    "PM",
+    "Feedback",
+    "Front Row",
+    "Six O'Clock News",
+    "The World Tonight",
+    "Midnight News",
+]
+
 
 class ListingsCache(object):
     def __init__(self):
@@ -713,6 +729,273 @@ def tv_listings(L):
     tv_day(L, L.tv_tomorrow, 0x030)
 
 
+def radio_header(name, day, time, subpage=None):
+    name = name.upper()
+    h = [
+        "␗    `h ␆```````````````````````````````",
+    ]
+    if "BBC RADIO 1" in name:
+        h += [
+            '␗<,,,,|4␓wujs57mjj#5"␡ ␇      ␇',
+            "␖wgggg␡5␓%** %-'**,%(/$␇      ␇",
+        ]
+    elif "BBC RADIO 2" in name:
+        h += [
+            "␗<,,,,|4␓wujs57mjj#5bs␡␇      ␇",
+            "␖wgggg␡5␓%** %-'**,%*-,␇      ␇",
+        ]
+    elif "BBC RADIO 3" in name:
+        h += [
+            "␗<,,,,|4␓wujs57mjj#5bs?␇      ␇",
+            "␖wgggg␡5␓%** %-'**,%(,/␇      ␇",
+        ]
+    elif "BBC RADIO 4" == name:
+        h += [
+            "␗<,,,,|4␓wujs57mjj#5j54␇      ␇",
+            "␖wgggg␡5␓%** %-'**,%\"#'␇      ␇",
+        ]
+    elif "BBC R5L" in name:
+        h += [
+            "␗<,,,,|4␓␡ss j jj0zjs  ␇      ␇",
+            "␖wgggg␡5␓,,' *,* +!*,  ␇      ␇",
+        ]
+    elif "BBC RADIO 4 EX" in name:
+        h += [
+            '␗<,,,,|4␕wuj54 w1"d&"7j{0w{   ␇',
+            "␖wgggg␡5␕%*\"#' -$(!) %* %%*   ␇",
+        ]
+    elif "BBC WS" in name or "BBC WORLD" in name:
+        h = [
+            "␗    `h ␃WORLD SERVICE␆`````````````````",
+            "␗<,,,,|4␓<$4hhl <lh,4<$       ␇",
+            "␖wgggg␡5␓w1uzj#5uzj#!w1       ␇",
+        ]
+    elif "CLASSIC" in name:
+        h = [
+            "␗    `h ␃RADIO␆`````````````````````````",
+            "␗<,,,,|4␓<$4 <lh,$<,hh, h,hll ␇",
+            "␖wgggg␡5␓u0u07kbs5s{jjp j#jjj ␇",
+        ]
+    elif "TALKSPORT" in name:
+        h = [
+            "␗    `h ␃RADIO␆`````````````````````````",
+            "␗<,,,,|4␓l$<44h`4<$<4<4<4l$   ␇",
+            "␖wgggg␡5␓j 75uj+4s57!u57kj    ␇",
+        ]
+    elif "ABSOLUTE" in name:
+        h = [
+            "␗    `h ␃RADIO␆`````````````````````````",
+            "␗<,,,,|4␓<lhl <,h,44 4h(<h,   ␇",
+            "␖wgggg␡5␓7kjs5s{jp5u0uz 5js   ␇",
+        ]
+
+    h.append("␖-----/%␆```````````````````````````````")
+
+    h[1] += day
+    h[2] += time
+    if subpage:
+        subpage = ttxcolour.char(ttxcolour.AW) + f" {subpage} "
+        h[3] = h[3][: -len(subpage)] + subpage
+
+    return h
+
+
+def radio_footer(name):
+    name = name.upper()
+
+    f = []
+
+    channels = [
+        ("R1", "Radio 1", 0x641),
+        ("R2", "Radio 2", 0x642),
+        ("R3", "Radio 3", 0x643),
+        ("R4", "Radio 4", 0x644),
+        ("R5L", "Radio 5L", 0x645),
+    ]
+
+    chan = None
+    if "BBC RADIO 1" in name:
+        chan = "R1"
+    elif "BBC RADIO 2" in name:
+        chan = "R2"
+    elif "BBC RADIO 3" in name:
+        chan = "R3"
+    elif "BBC RADIO 4" in name:
+        chan = "R4"
+    elif "BBC R5L" in name:
+        chan = "R5L"
+
+    line = []
+    links = []
+    fasttexts = []
+    for n, l, p in channels:
+        if n != chan:
+            line.append(f'{n.replace(" ","")} {p:03x}')
+            links.append(l)
+            fasttexts.append(p)
+        if len(line) >= 4:
+            break
+    back = (
+        ttxcolour.char(ttxcolour.AC)
+        + ttxcolour.char(ttxcolour.NEW_BACK)
+        + ttxcolour.char(ttxcolour.AB)
+    )
+    if chan:
+        f.append(back + "   ".join(line))
+    else:
+        f.append("␆␝␄R1 641 R2 642 R3 643 R4 644 R5L 645  ")
+
+    f.append("␄␝␇Front page␇100 Sport␇300    A-Z 199  ")
+
+    colours = [ttxcolour.AR, ttxcolour.AG, ttxcolour.AY, ttxcolour.AC]
+
+    ft = ""
+    for c, n in zip(colours, links):
+        ft += ttxcolour.char(c) + f"{n:<9.9}"
+
+    f.append(ft)
+
+    return (f, fasttexts)
+
+
+def radio_day(L, listings, offset=0):
+    max_rows = 16
+    for page_num, channels in listings.items():
+        page = ttxpage.TeletextPage("Radio Page", page_num + offset)
+        pages = []
+        for lcn in sorted(channels.keys()):
+            day = None
+            times = None
+            prevtimes = (None, None)
+            p = []
+            lcn_pages = []
+            programmes = channels[lcn]
+            min_hour = 4
+            for i in range(len(programmes)):
+                prog = programmes[i]
+                start = prog["start"]
+                end = start + prog["dur"]
+                if day is None and start.hour < min_hour:
+                    continue
+                name = prog["name"]
+                desc = prog["desc"]
+                if name.endswith("...") and desc.startswith("..."):
+                    index = desc.find(". ", 3)
+                    if index > 0:
+                        join = " "
+                        if name[-4] == "-":
+                            join = ""
+                        name = name[:-3] + join + desc[3:index]
+                        desc = desc[index + 2 :]
+
+                if len(name) > 80 and ": " in name:
+                    name, _, rest = name.partition(": ")
+                    desc = rest + ". " + desc
+
+                if lcn in [702, 703, 704]:
+                    if name in _radio_no_desc:
+                        desc = ""
+                else:
+                    desc = ""
+
+                match = re.match(r"\d+/\d+\. ", desc)
+                if match:
+                    desc = desc.replace(match.group(0), "")
+                for sep in [".", "?", "!", ":"]:
+                    s = f"{sep} "
+                    if s in desc:
+                        index = desc.find(s, 3)
+                        desc = desc[:index]
+                if desc.endswith("."):
+                    desc = desc[:-1]
+
+                time = start.strftime("%H%M")
+
+                if times is None:
+                    times = time
+                else:
+                    times = times[:4] + "-" + end.strftime("%H%M")
+                theday = start.strftime("%A").upper()
+                if day is None:
+                    day = theday
+                elif day != theday:
+                    day = day[:3] + "/" + theday[:3]
+
+                if i + 1 == len(programmes):
+                    time += "-" + end.strftime("%H%M")
+                lines = textwrap.wrap(
+                    page.fixup(name) + "¬\t" + page.fixup(desc),
+                    38 - len(time),
+                    expand_tabs=False,
+                    replace_whitespace=False,
+                )
+                colour = ttxcolour.white()
+                rows = []
+
+                for ll in lines:
+                    if "\t" in ll or "¬" in ll:
+                        ll = ll.replace("¬", "\t")
+                        ll = ll.replace("\t\t", "\t")
+                        ll = ll.replace("\t", ttxcolour.cyan())
+                        rows.append(f"{ttxcolour.yellow()}{time}{colour}{ll}")
+                        colour = ttxcolour.cyan()
+                    else:
+                        rows.append(f"{ttxcolour.yellow()}{time}{colour}{ll}")
+                    time = "    "
+
+                if (len(p) + len(rows)) <= max_rows:
+                    p.extend(rows)
+                    prevtimes = (day, times)
+                else:
+                    lcn_pages.append((lcn, *prevtimes, p))
+                    prevtimes = (day, times)
+                    day = theday
+                    times = start.strftime("%H%M")
+                    p = []
+                    p.extend(rows)
+            if len(p):
+                lcn_pages.append((lcn, *prevtimes, p))
+            if len(lcn_pages) == 1:
+                l, d, t, p = lcn_pages[0]
+                pages.append((lcn, d, "", p))
+            else:
+                pages.extend(lcn_pages)
+
+        subpage = 0
+        for lcn, day, times, p in pages:
+            if len(pages) > 1:
+                subpage += 1
+                page.header(page_num + offset, subpage, status=0xC000)
+            else:
+                page.header(page_num + offset, subpage, status=0x8000)
+            index = None
+            if len(pages) > 1:
+                index = f"{subpage}/{len(pages)}"
+            chan_name = L.radio_lcn_to_name(lcn)
+            line = 1
+            for r in radio_header(chan_name, day, times, index):
+                page.addline(line, ttxutils.decode(r))
+                line += 1
+
+            for r in p:
+                if len(r):
+                    page.addline(line, r)
+                line += 1
+
+            foot, fast = radio_footer(chan_name)
+            line = 25 - len(foot)
+            for l in foot:
+                page.addline(line, ttxutils.decode(l))
+                line += 1
+            page.addfasttext(*fast, 0x8FF, 0x100)
+
+        page.save()
+
+
+def radio_listings(L):
+    radio_day(L, L.radio_today)
+
+
 def main():
     config.Config().add("defaults.yaml")
     config.Config().add("pm.yaml")
@@ -721,6 +1004,7 @@ def main():
     L = ListingsCache()
 
     tv_listings(L)
+    radio_listings(L)
 
 
 if __name__ == "__main__":
