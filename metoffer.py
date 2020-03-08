@@ -32,17 +32,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 """
 
 
-__version__ = "2.0"
+__version__ = "2.0.1"
 __author__ = "Stephen B Murray <sbm199@gmail.com>"
 
 
 import datetime
 import json
 import operator
-try:
-    import urllib.request as url_lib
-except ImportError:
-    import urllib2 as url_lib
+import requests
 
 
 HOST = "http://datapoint.metoffice.gov.uk/public/data"
@@ -183,8 +180,8 @@ class MetOffer():
         rest_url = "/".join([HOST, data_category, resource_category, field, DATA_TYPE, request])
         query_string = "?" + "&".join(["res=" + step, "time=" + isotime if isotime is not None else "", "key=" + self.key])
         url = rest_url + query_string
-        page = url_lib.urlopen(url)
-        pg = page.read()
+        page = requests.get(url)
+        pg = page.content
         return pg
     
     def loc_forecast(self, request, step, isotime=None):
