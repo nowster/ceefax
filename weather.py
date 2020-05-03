@@ -13,6 +13,7 @@ import datetime
 import pickle
 import textwrap
 import re
+import types
 import config
 
 _config = config.Config().config
@@ -208,13 +209,25 @@ class WeatherCache(object):
         key = f"observations!{request}"
         if key in self.cache:
             value = self.cache[key]
-            if self._cache_value_valid(value.data_date, cache_hours):
+            if value and self._cache_value_valid(value.data_date, cache_hours):
                 return value
         w = self._M.loc_observations(request)
         try:
             value = metoffer.Weather(w)
-        except:
+        except KeyError as e:
+            print(f"KeyError: {key} {e}")
+            try:
+                data_date = w["SiteRep"]["DV"]["dataDate"]
+            except KeyError:
+                data_date = dateutil.utils.default_tzinfo(
+                    datetime.datetime.now(), dateutil.tz.gettz()
+                ).isoformat()
+
+            value = types.SimpleNamespace(data_date=data_date,
+                                          data={})
+        except Exception as e:
             print(f"ERROR: {key}")
+            print(f"{e.__class__.__name__}: {str(e)}")
             print(repr(w))
             raise
         self.cache[key] = value
@@ -543,9 +556,9 @@ def weatherobservations(W):
         else:
             row += "n/a"
         rows.append(row)
-        if timestamp is None or time > timestamp:
+        if time is not None and (timestamp is None or time > timestamp):
             timestamp = time
-        if temp:
+        if temp and temp != '-':
             if temp < minimum:
                 minimum = temp
             if temp > maximum:
