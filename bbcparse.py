@@ -230,7 +230,11 @@ class Feed(object):
 
             storytag = self.parser.getElementById('story-body')
             if storytag is None:
-                storytag = self.parser.getElementsByClassName('story-body__inner')[0]
+                storytag = self.parser.getElementsByClassName('story-body__inner')
+                if len(storytag) > 0:
+                    storytag = storytag[0]
+                else:
+                    storytag = self.parser.getElementsByClassName('story-body')[0]
 
             children = storytag.getAllChildNodes().getElementsByTagName('p')
             for p in children:
